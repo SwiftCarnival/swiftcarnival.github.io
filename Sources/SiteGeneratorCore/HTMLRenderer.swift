@@ -1,6 +1,6 @@
 import Foundation
 
-func renderFeaturedHTML(_ edition: Edition) -> String {
+public func renderFeaturedHTML(_ edition: Edition) -> String {
     let hostDisplay = edition.host.name.isEmpty ? "TBD" : edition.host.name
     let topicDisplay = edition.topic.isEmpty ? "TBD" : edition.topic
 
@@ -21,7 +21,7 @@ func renderFeaturedHTML(_ edition: Edition) -> String {
     """
 }
 
-func renderTableHTML(_ editions: [Edition]) -> String {
+public func renderTableHTML(_ editions: [Edition]) -> String {
     var rows = ""
     for edition in editions {
         let hostDisplay = edition.host.name.isEmpty ? "TBD" : edition.host.name
@@ -62,7 +62,7 @@ func renderTableHTML(_ editions: [Edition]) -> String {
     """
 }
 
-func renderMarkdownTable(_ editions: [Edition]) -> String {
+public func renderMarkdownTable(_ editions: [Edition]) -> String {
     var lines = [
         "| Month | Host | Topic | Status |",
         "|-------|------|-------|--------|",
@@ -92,7 +92,7 @@ func renderMarkdownTable(_ editions: [Edition]) -> String {
     return lines.joined(separator: "\n")
 }
 
-func findFeatured(_ editions: [Edition]) -> Edition? {
+public func findFeatured(_ editions: [Edition]) -> Edition? {
     if let open = editions.reversed().first(where: { $0.status == .open }) {
         return open
     }

@@ -14,11 +14,9 @@ A monthly community blogging event for Swift developers. Each month, a volunteer
 
 ## How to Volunteer
 
-1. Fork this repository.
-2. Edit `data/editions.yml` — add a new entry for the month you want to host.
-3. Keep entries in reverse chronological order (newest first).
-4. Open a pull request.
-5. Merging your PR means you're confirmed as host.
+**Easy way:** [Open an issue](https://github.com/SwiftCarnival/swiftcarnival.github.io/issues/new?template=volunteer-to-host.yml) using the "Volunteer to Host" template. A maintainer will add you to the schedule.
+
+**PR way:** Fork this repo, add your entry to `data/editions.yml` (reverse chronological order, newest first), and open a pull request. Merging = confirmed.
 
 ## How It Works
 

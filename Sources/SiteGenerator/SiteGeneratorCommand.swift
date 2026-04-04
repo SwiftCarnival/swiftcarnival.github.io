@@ -1,5 +1,6 @@
 import ArgumentParser
 import Foundation
+import SiteGeneratorCore
 import Yams
 
 @main

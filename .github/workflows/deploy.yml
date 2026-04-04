@@ -20,6 +20,7 @@ jobs:
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
+      - run: swift test
       - run: swift run SiteGenerator validate
 
   build-and-deploy:

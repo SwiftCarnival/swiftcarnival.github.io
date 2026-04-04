@@ -1,35 +1,52 @@
 import Foundation
 
-struct Host: Codable {
-    var name: String
-    var link: String
+public struct Host: Codable, Sendable {
+    public var name: String
+    public var link: String
+
+    public init(name: String, link: String) {
+        self.name = name
+        self.link = link
+    }
 }
 
-struct Edition: Codable {
-    var month: String
-    var host: Host
-    var topic: String
-    var status: Status
-    var roundup: String
+public struct Edition: Codable, Sendable {
+    public var month: String
+    public var host: Host
+    public var topic: String
+    public var status: Status
+    public var roundup: String
 
-    enum Status: String, Codable {
+    public enum Status: String, Codable, Sendable {
         case upcoming
         case open
         case published
     }
+
+    public init(month: String, host: Host, topic: String, status: Status, roundup: String) {
+        self.month = month
+        self.host = host
+        self.topic = topic
+        self.status = status
+        self.roundup = roundup
+    }
 }
 
-struct EditionsFile: Codable {
-    var editions: [Edition]
+public struct EditionsFile: Codable, Sendable {
+    public var editions: [Edition]
+
+    public init(editions: [Edition]) {
+        self.editions = editions
+    }
 }
 
-enum ValidationError: Error, CustomStringConvertible {
+public enum ValidationError: Error, CustomStringConvertible, Equatable {
     case invalidMonthFormat(String)
     case duplicateMonth(String)
     case notReverseChrono(String, String)
     case publishedWithoutRoundup(String)
 
-    var description: String {
+    public var description: String {
         switch self {
         case .invalidMonthFormat(let m):
             return "Invalid month format: '\(m)' (expected YYYY-MM)"
@@ -43,7 +60,7 @@ enum ValidationError: Error, CustomStringConvertible {
     }
 }
 
-func validateEditions(_ editions: [Edition]) throws {
+public func validateEditions(_ editions: [Edition]) throws {
     let monthPattern = /^\d{4}-(0[1-9]|1[0-2])$/
     var seen = Set<String>()
 

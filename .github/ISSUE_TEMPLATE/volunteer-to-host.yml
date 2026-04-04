@@ -1,0 +1,43 @@
+name: Volunteer to Host
+description: Sign up to host a Swift Blog Carnival edition
+title: "Host: [MONTH]"
+labels: ["volunteer"]
+body:
+  - type: input
+    id: month
+    attributes:
+      label: Month
+      description: Which month do you want to host? (YYYY-MM format)
+      placeholder: "2026-06"
+    validations:
+      required: true
+  - type: input
+    id: name
+    attributes:
+      label: Your name
+      description: How should we credit you?
+      placeholder: "Jane Swift"
+    validations:
+      required: true
+  - type: input
+    id: link
+    attributes:
+      label: Your blog or profile URL
+      placeholder: "https://example.com"
+    validations:
+      required: false
+  - type: input
+    id: topic
+    attributes:
+      label: Proposed topic
+      description: What topic would you like the community to write about?
+      placeholder: "Concurrency in Swift"
+    validations:
+      required: false
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else?
+      description: Co-host interest, topic alternatives, timeline preferences, etc.
+    validations:
+      required: false

@@ -10,13 +10,24 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.3.0"),
     ],
     targets: [
+        .target(
+            name: "SiteGeneratorCore",
+            dependencies: ["Yams"],
+            path: "Sources/SiteGeneratorCore"
+        ),
         .executableTarget(
             name: "SiteGenerator",
             dependencies: [
+                "SiteGeneratorCore",
                 "Yams",
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
             ],
             path: "Sources/SiteGenerator"
+        ),
+        .testTarget(
+            name: "SiteGeneratorCoreTests",
+            dependencies: ["SiteGeneratorCore"],
+            path: "Tests/SiteGeneratorCoreTests"
         ),
     ]
 )

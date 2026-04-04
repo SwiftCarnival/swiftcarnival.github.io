@@ -1,0 +1,30 @@
+name: Update Edition
+description: Update an edition's status or add a roundup link
+title: "Update: [MONTH]"
+labels: ["update"]
+body:
+  - type: input
+    id: month
+    attributes:
+      label: Edition month
+      description: Which edition are you updating? (YYYY-MM format)
+      placeholder: "2026-04"
+    validations:
+      required: true
+  - type: dropdown
+    id: status
+    attributes:
+      label: New status
+      options:
+        - open (accepting submissions)
+        - published (roundup is live)
+    validations:
+      required: true
+  - type: input
+    id: roundup
+    attributes:
+      label: Roundup URL
+      description: Link to the published roundup post (if status is "published")
+      placeholder: "https://example.com/swift-carnival-april-2026"
+    validations:
+      required: false
