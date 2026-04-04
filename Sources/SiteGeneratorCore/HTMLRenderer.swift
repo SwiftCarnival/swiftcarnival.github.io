@@ -4,19 +4,37 @@ public func renderFeaturedHTML(_ edition: Edition) -> String {
     let hostDisplay = edition.host.name.isEmpty ? "TBD" : edition.host.name
     let topicDisplay = edition.topic.isEmpty ? "TBD" : edition.topic
 
-    let hostLink: String
+    let hostValue: String
     if !edition.host.link.isEmpty {
-        hostLink = "<a href=\"\(edition.host.link)\">\(hostDisplay)</a>"
+        hostValue = "<a href=\"\(edition.host.link)\">\(hostDisplay)</a>"
     } else {
-        hostLink = hostDisplay
+        hostValue = hostDisplay
+    }
+
+    let badgeClass: String
+    switch edition.status {
+    case .upcoming: badgeClass = "badge-upcoming"
+    case .open: badgeClass = "badge-open"
+    case .published: badgeClass = "badge-published"
     }
 
     return """
-    <section class="featured">
-        <span class="badge">\(edition.status.rawValue)</span>
-        <h2>\(edition.month)</h2>
-        <p class="host">Host: \(hostLink)</p>
-        <p class="topic">Topic: \(topicDisplay)</p>
+    <section class="featured" aria-label="Current Edition">
+        <div class="featured-header">
+            <span class="featured-label">Current Edition</span>
+            <span class="badge \(badgeClass)">\(edition.status.rawValue)</span>
+        </div>
+        <div class="featured-month">\(formatMonth(edition.month))</div>
+        <div class="featured-meta">
+            <div class="featured-detail">
+                <span class="detail-label">Host</span>
+                <span class="detail-value">\(hostValue)</span>
+            </div>
+            <div class="featured-detail">
+                <span class="detail-label">Topic</span>
+                <span class="detail-value">\(topicDisplay)</span>
+            </div>
+        </div>
     </section>
     """
 }
@@ -34,14 +52,29 @@ public func renderTableHTML(_ editions: [Edition]) -> String {
             hostCell = hostDisplay
         }
 
-        let statusCell = "<span class=\"status-\(edition.status.rawValue)\">\(edition.status.rawValue)</span>"
+        let badgeClass: String
+        switch edition.status {
+        case .upcoming: badgeClass = "badge-upcoming"
+        case .open: badgeClass = "badge-open"
+        case .published: badgeClass = "badge-published"
+        }
+
+        let statusCell = "<span class=\"badge \(badgeClass)\">\(edition.status.rawValue)</span>"
+
+        let roundupCell: String
+        if edition.status == .published && !edition.roundup.isEmpty {
+            roundupCell = "<td class=\"cell-roundup\"><a href=\"\(edition.roundup)\" class=\"roundup-link\">Read roundup &rarr;</a></td>"
+        } else {
+            roundupCell = "<td class=\"cell-roundup\"></td>"
+        }
 
         rows += """
                 <tr>
-                    <td>\(edition.month)</td>
-                    <td>\(hostCell)</td>
-                    <td>\(topicDisplay)</td>
-                    <td>\(statusCell)</td>
+                    <td class="cell-month">\(edition.month)</td>
+                    <td class="cell-host">\(hostCell)</td>
+                    <td class="cell-topic">\(topicDisplay)</td>
+                    <td class="cell-status">\(statusCell)</td>
+                    \(roundupCell)
                 </tr>\n
         """
     }
@@ -54,6 +87,7 @@ public func renderTableHTML(_ editions: [Edition]) -> String {
                 <th>Host</th>
                 <th>Topic</th>
                 <th>Status</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -100,4 +134,17 @@ public func findFeatured(_ editions: [Edition]) -> Edition? {
         return upcoming
     }
     return editions.first
+}
+
+func formatMonth(_ month: String) -> String {
+    let parts = month.split(separator: "-")
+    guard parts.count == 2,
+          let monthNum = Int(parts[1]) else { return month }
+
+    let names = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ]
+    guard monthNum >= 1 && monthNum <= 12 else { return month }
+    return "\(names[monthNum - 1]) \(parts[0])"
 }

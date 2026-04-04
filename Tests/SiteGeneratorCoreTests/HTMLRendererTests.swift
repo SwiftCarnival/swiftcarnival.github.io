@@ -5,10 +5,10 @@ import Testing
     @Test func featuredWithHost() {
         let edition = Edition(month: "2026-05", host: Host(name: "Alice", link: "https://alice.dev"), topic: "Concurrency", status: .open, roundup: "")
         let html = renderFeaturedHTML(edition)
-        #expect(html.contains("2026-05"))
+        #expect(html.contains("May 2026"))
         #expect(html.contains("<a href=\"https://alice.dev\">Alice</a>"))
         #expect(html.contains("Concurrency"))
-        #expect(html.contains("open"))
+        #expect(html.contains("badge-open"))
     }
 
     @Test func featuredWithEmptyHost() {
@@ -30,8 +30,8 @@ import Testing
         #expect(html.contains("2026-04"))
         #expect(html.contains("Alice"))
         #expect(html.contains("<a href=\"https://bob.dev\">Bob</a>"))
-        #expect(html.contains("status-upcoming"))
-        #expect(html.contains("status-published"))
+        #expect(html.contains("badge-upcoming"))
+        #expect(html.contains("badge-published"))
     }
 }
 
