@@ -12,18 +12,13 @@ A monthly community blogging event for Swift developers. Each month, a volunteer
 | 2026-04 | [Christian Tietze](https://christiantietze.de) | Tiny Languages | upcoming |
 <!-- EDITIONS:END -->
 
-## How to Volunteer
-
-**Easy way:** [Open an issue](https://github.com/SwiftCarnival/swiftcarnival.github.io/issues/new?template=volunteer-to-host.yml) using the "Volunteer to Host" template. A maintainer will add you to the schedule.
-
-**PR way:** Fork this repo, add your entry to `data/editions.yml` (reverse chronological order, newest first), and open a pull request. Merging = confirmed.
-
 ## How It Works
 
-1. **Host** picks a topic and announces it (blog, social media, etc.)
-2. **Community** writes and publishes posts on the topic during the month.
-3. **Host** collects links and publishes a roundup post at month's end.
-4. **Host** submits another PR updating `status` to `published` and adding the `roundup` URL.
+1. **Volunteer:** [Open an issue](https://github.com/SwiftCarnival/swiftcarnival.github.io/issues/new?template=volunteer-to-host.yml) to claim a month and propose a topic. A maintainer will approve you.
+2. **Announce:** Write a blog post or share on social media that your edition is open for submissions.
+3. **Collect:** The community writes and publishes posts on your topic during the month.
+4. **Publish:** At month's end, publish a roundup post linking to all submissions.
+5. **Close the loop:** [Open an update issue](https://github.com/SwiftCarnival/swiftcarnival.github.io/issues/new?template=update-edition.yml) with your roundup URL. A maintainer marks it as published and the site updates automatically.
 
 ## Building the Site Locally
 
