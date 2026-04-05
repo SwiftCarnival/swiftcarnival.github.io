@@ -33,6 +33,31 @@ import Testing
         #expect(html.contains("badge-upcoming"))
         #expect(html.contains("badge-published"))
     }
+
+    @Test func tableShowsRoundupLink() {
+        let editions = [
+            Edition(month: "2026-04", host: Host(name: "Bob", link: ""), topic: "SwiftUI", status: .published, roundup: "https://example.com/roundup"),
+        ]
+        let html = renderTableHTML(editions)
+        #expect(html.contains("roundup-link"))
+        #expect(html.contains("https://example.com/roundup"))
+    }
+
+    @Test func tableEmptyHostShowsDash() {
+        let editions = [
+            Edition(month: "2026-04", host: Host(name: "", link: ""), topic: "", status: .upcoming, roundup: ""),
+        ]
+        let html = renderTableHTML(editions)
+        #expect(html.contains("&mdash;"))
+    }
+
+    @Test func tableShowsTopicInSpan() {
+        let editions = [
+            Edition(month: "2026-04", host: Host(name: "Alice", link: ""), topic: "Concurrency", status: .open, roundup: ""),
+        ]
+        let html = renderTableHTML(editions)
+        #expect(html.contains("<span class=\"ed-topic\">Concurrency</span>"))
+    }
 }
 
 @Suite struct MarkdownTableTests {

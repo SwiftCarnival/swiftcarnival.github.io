@@ -6,9 +6,9 @@ public func renderFeaturedHTML(_ edition: Edition) -> String {
 
     let hostValue: String
     if !edition.host.link.isEmpty {
-        hostValue = "<a href=\"\(edition.host.link)\">\(hostDisplay)</a>"
+        hostValue = "Hosted by <a href=\"\(edition.host.link)\">\(hostDisplay)</a>"
     } else {
-        hostValue = hostDisplay
+        hostValue = "Hosted by \(hostDisplay)"
     }
 
     let badgeClass: String
@@ -19,37 +19,33 @@ public func renderFeaturedHTML(_ edition: Edition) -> String {
     }
 
     return """
-    <section class="featured" aria-label="Current Edition">
-        <div class="featured-header">
-            <span class="featured-label">Current Edition</span>
-            <span class="badge \(badgeClass)">\(edition.status.rawValue)</span>
-        </div>
-        <div class="featured-month">\(formatMonth(edition.month))</div>
-        <div class="featured-meta">
-            <div class="featured-detail">
-                <span class="detail-label">Host</span>
-                <span class="detail-value">\(hostValue)</span>
-            </div>
-            <div class="featured-detail">
-                <span class="detail-label">Topic</span>
-                <span class="detail-value">\(topicDisplay)</span>
-            </div>
-        </div>
-    </section>
+    <div class="featured">
+        <span class="featured-month">\(formatMonth(edition.month))</span>
+        <span class="featured-detail">\(hostValue)</span>
+        <span class="featured-detail">\(topicDisplay)</span>
+        <span class="badge \(badgeClass)">\(edition.status.rawValue)</span>
+    </div>
     """
 }
 
 public func renderTableHTML(_ editions: [Edition]) -> String {
-    var rows = ""
+    var items = ""
     for edition in editions {
-        let hostDisplay = edition.host.name.isEmpty ? "TBD" : edition.host.name
-        let topicDisplay = edition.topic.isEmpty ? "TBD" : edition.topic
+        let hostDisplay = edition.host.name.isEmpty ? "&mdash;" : edition.host.name
+        let topicDisplay = edition.topic.isEmpty ? "" : edition.topic
 
-        let hostCell: String
+        let hostHTML: String
         if !edition.host.link.isEmpty {
-            hostCell = "<a href=\"\(edition.host.link)\">\(hostDisplay)</a>"
+            hostHTML = "<a href=\"\(edition.host.link)\">\(hostDisplay)</a>"
         } else {
-            hostCell = hostDisplay
+            hostHTML = hostDisplay
+        }
+
+        let topicHTML: String
+        if !topicDisplay.isEmpty {
+            topicHTML = "<span class=\"ed-topic\">\(topicDisplay)</span>"
+        } else {
+            topicHTML = ""
         }
 
         let badgeClass: String
@@ -59,41 +55,23 @@ public func renderTableHTML(_ editions: [Edition]) -> String {
         case .published: badgeClass = "badge-published"
         }
 
-        let statusCell = "<span class=\"badge \(badgeClass)\">\(edition.status.rawValue)</span>"
-
-        let roundupCell: String
+        let roundupHTML: String
         if edition.status == .published && !edition.roundup.isEmpty {
-            roundupCell = "<td class=\"cell-roundup\"><a href=\"\(edition.roundup)\" class=\"roundup-link\">Read roundup &rarr;</a></td>"
+            roundupHTML = "<a href=\"\(edition.roundup)\" class=\"roundup-link\">Roundup &rarr;</a>"
         } else {
-            roundupCell = "<td class=\"cell-roundup\"></td>"
+            roundupHTML = ""
         }
 
-        rows += """
-                <tr>
-                    <td class="cell-month">\(edition.month)</td>
-                    <td class="cell-host">\(hostCell)</td>
-                    <td class="cell-topic">\(topicDisplay)</td>
-                    <td class="cell-status">\(statusCell)</td>
-                    \(roundupCell)
-                </tr>\n
+        items += """
+            <div class="ed-item">
+                <span class="ed-month">\(edition.month)</span>
+                <span class="ed-info">\(hostHTML)\(topicHTML)</span>
+                <span class="ed-end">\(roundupHTML)<span class="badge \(badgeClass)">\(edition.status.rawValue)</span></span>
+            </div>\n
         """
     }
 
-    return """
-    <table>
-        <thead>
-            <tr>
-                <th>Month</th>
-                <th>Host</th>
-                <th>Topic</th>
-                <th>Status</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-    \(rows)    </tbody>
-    </table>
-    """
+    return items
 }
 
 public func renderMarkdownTable(_ editions: [Edition]) -> String {
