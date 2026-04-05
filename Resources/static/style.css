@@ -1,7 +1,7 @@
 :root {
     --text: #051416;
     --text-secondary: #4a5568;
-    --text-tertiary: #8a919c;
+    --text-tertiary: #6b7280;
     --bg: #FFFFFF;
     --surface: #faf9f7;
     --border: #e5e2dc;
@@ -52,14 +52,20 @@ header p {
     font-size: 1rem;
 }
 
-.divider {
-    width: 100%;
+.how-it-works {
+    margin-top: 0.75rem;
+    font-size: 0.88rem;
+    color: var(--text-tertiary);
+}
+
+hr {
+    border: none;
     height: 1px;
     background: var(--border);
     margin: 3rem 0;
 }
 
-.section-label {
+.section-heading {
     font-size: 0.6rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -67,6 +73,8 @@ header p {
     color: var(--text-tertiary);
     margin-bottom: 1rem;
 }
+
+.editions-heading { margin-top: 3rem; }
 
 .featured {
     display: flex;
@@ -91,7 +99,7 @@ header p {
 
 .badge {
     display: inline-block;
-    font-size: 0.55rem;
+    font-size: 0.65rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -100,18 +108,30 @@ header p {
     vertical-align: middle;
 }
 
-.badge-upcoming { background: linear-gradient(135deg, var(--orange-start), var(--orange-end)); color: #5a3000; }
-.badge-open { background: #d1f5d9; color: #1a6b2e; }
-.badge-published { background: var(--surface); color: #999; }
+.badge-upcoming { background: linear-gradient(135deg, var(--orange-start), var(--orange-end)); color: #4a2800; }
+.badge-open { background: #d1f5d9; color: #15572a; }
+.badge-published { background: #eee; color: #666; }
 
-.editions-label {
-    font-size: 0.6rem;
+.featured-announcement {
+    margin-top: 0.75rem;
+    width: 100%;
+}
+
+.announcement-link {
+    display: inline-block;
+    font-size: 0.82rem;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--text-tertiary);
-    margin-top: 3rem;
-    margin-bottom: 1rem;
+    color: #fff;
+    background: linear-gradient(to bottom right, var(--button-a), var(--button-b));
+    padding: 15px 48px;
+    border-radius: var(--radius-button);
+    text-decoration: none;
+    transition: box-shadow 0.2s, transform 0.15s;
+}
+
+.announcement-link:hover {
+    box-shadow: 0 4px 20px rgba(240, 82, 56, 0.25);
+    transform: translateY(-1px);
 }
 
 .ed-item {
@@ -129,7 +149,7 @@ header p {
     font-variant-numeric: tabular-nums;
     font-weight: 600;
     font-size: 0.82rem;
-    min-width: 5.5rem;
+    min-width: 7rem;
     color: var(--text);
 }
 
@@ -149,16 +169,22 @@ header p {
     align-items: center;
     gap: 0.75rem;
     flex-shrink: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
-.roundup-link {
+.roundup-link,
+.submit-link {
     font-size: 0.75rem;
     font-weight: 500;
-    color: var(--button-b);
     text-decoration: none;
 }
 
-.roundup-link:hover { text-decoration: underline; }
+.roundup-link { color: var(--text-tertiary); }
+.roundup-link:hover { color: var(--text); text-decoration: underline; }
+
+.submit-link { color: var(--button-b); }
+.submit-link:hover { text-decoration: underline; }
 
 .volunteer {
     margin-top: 3rem;
@@ -181,23 +207,20 @@ header p {
     margin-top: 0.15rem;
 }
 
-.btn-pill {
+.btn-outline {
     display: inline-block;
-    background: linear-gradient(to bottom right, var(--button-a), var(--button-b));
-    color: #fff;
-    font-weight: 600;
     font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
     padding: 15px 48px;
+    border: 1.5px solid var(--border);
     border-radius: var(--radius-button);
     text-decoration: none;
     white-space: nowrap;
-    transition: box-shadow 0.2s, transform 0.15s;
+    transition: border-color 0.15s, color 0.15s;
 }
 
-.btn-pill:hover {
-    box-shadow: 0 4px 20px rgba(240, 82, 56, 0.25);
-    transform: translateY(-1px);
-}
+.btn-outline:hover { border-color: var(--text); }
 
 footer {
     margin-top: 3rem;
@@ -216,6 +239,8 @@ footer a:hover { color: var(--text); }
     .page { padding: 0 1.25rem; }
     header { padding: 3.5rem 0 0; }
     .featured { flex-direction: column; gap: 0.5rem; }
+    .featured-announcement { margin-top: 0.5rem; }
     .volunteer { flex-direction: column; align-items: flex-start; }
-    .ed-topic { display: none; }
+    .ed-topic { font-size: 0.78rem; }
+    .ed-end { gap: 0.5rem; }
 }

@@ -3,6 +3,7 @@ import Foundation
 public func renderFeaturedHTML(_ edition: Edition) -> String {
     let hostDisplay = edition.host.name.isEmpty ? "TBD" : edition.host.name
     let topicDisplay = edition.topic.isEmpty ? "TBD" : edition.topic
+    let monthDisplay = formatMonth(edition.month)
 
     let hostValue: String
     if !edition.host.link.isEmpty {
@@ -18,14 +19,25 @@ public func renderFeaturedHTML(_ edition: Edition) -> String {
     case .published: badgeClass = "badge-published"
     }
 
-    return """
+    var html = """
     <div class="featured">
-        <span class="featured-month">\(formatMonth(edition.month))</span>
+        <span class="featured-month">\(monthDisplay)</span>
         <span class="featured-detail">\(hostValue)</span>
         <span class="featured-detail">\(topicDisplay)</span>
         <span class="badge \(badgeClass)">\(edition.status.rawValue)</span>
-    </div>
     """
+
+    if edition.status == .open && !edition.announcement.isEmpty {
+        html += """
+
+            <div class="featured-announcement">
+                <a href="\(edition.announcement)" class="announcement-link" aria-label="See the call for posts for \(monthDisplay): \(topicDisplay)">See the call for posts &rarr;</a>
+            </div>
+        """
+    }
+
+    html += "\n</div>"
+    return html
 }
 
 public func renderTableHTML(_ editions: [Edition]) -> String {
@@ -33,6 +45,7 @@ public func renderTableHTML(_ editions: [Edition]) -> String {
     for edition in editions {
         let hostDisplay = edition.host.name.isEmpty ? "&mdash;" : edition.host.name
         let topicDisplay = edition.topic.isEmpty ? "" : edition.topic
+        let monthDisplay = formatMonth(edition.month)
 
         let hostHTML: String
         if !edition.host.link.isEmpty {
@@ -43,7 +56,7 @@ public func renderTableHTML(_ editions: [Edition]) -> String {
 
         let topicHTML: String
         if !topicDisplay.isEmpty {
-            topicHTML = "<span class=\"ed-topic\">\(topicDisplay)</span>"
+            topicHTML = "<span class=\"ed-topic\" aria-hidden=\"true\">\(topicDisplay)</span>"
         } else {
             topicHTML = ""
         }
@@ -55,18 +68,20 @@ public func renderTableHTML(_ editions: [Edition]) -> String {
         case .published: badgeClass = "badge-published"
         }
 
-        let roundupHTML: String
-        if edition.status == .published && !edition.roundup.isEmpty {
-            roundupHTML = "<a href=\"\(edition.roundup)\" class=\"roundup-link\">Roundup &rarr;</a>"
+        let actionHTML: String
+        if edition.status == .open && !edition.announcement.isEmpty {
+            actionHTML = "<a href=\"\(edition.announcement)\" class=\"submit-link\" aria-label=\"Submit a post for \(monthDisplay): \(topicDisplay)\">Submit post &rarr;</a>"
+        } else if edition.status == .published && !edition.roundup.isEmpty {
+            actionHTML = "<a href=\"\(edition.roundup)\" class=\"roundup-link\" aria-label=\"Read the roundup for \(monthDisplay): \(topicDisplay)\">Read roundup &rarr;</a>"
         } else {
-            roundupHTML = ""
+            actionHTML = ""
         }
 
         items += """
             <div class="ed-item">
-                <span class="ed-month">\(edition.month)</span>
+                <span class="ed-month">\(monthDisplay)</span>
                 <span class="ed-info">\(hostHTML)\(topicHTML)</span>
-                <span class="ed-end">\(roundupHTML)<span class="badge \(badgeClass)">\(edition.status.rawValue)</span></span>
+                <span class="ed-end">\(actionHTML)<span class="badge \(badgeClass)">\(edition.status.rawValue)</span></span>
             </div>\n
         """
     }

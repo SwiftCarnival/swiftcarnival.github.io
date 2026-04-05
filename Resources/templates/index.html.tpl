@@ -14,14 +14,15 @@
         <div class="orange-dot" aria-hidden="true"></div>
         <h1>Swift Blog Carnival</h1>
         <p>A monthly community blogging event. One host, one topic, everyone writes.</p>
+        <p class="how-it-works">Each month a host picks a topic. You write a post on your own blog, then share the link. The host collects everything into a roundup.</p>
     </header>
 
-    <div class="divider"></div>
+    <hr>
 
-    <div class="section-label">Current Edition</div>
+    <h2 class="section-heading">Current Edition</h2>
     {{FEATURED}}
 
-    <div class="editions-label">Editions</div>
+    <h2 class="section-heading editions-heading">Editions</h2>
     {{TABLE}}
 
     <section class="volunteer">
@@ -29,7 +30,7 @@
             <h2>Want to host?</h2>
             <p>Pick a month, choose a topic, rally the community.</p>
         </div>
-        <a href="https://github.com/SwiftCarnival/swiftcarnival.github.io/issues/new?template=volunteer-to-host.yml" class="btn-pill">Volunteer</a>
+        <a href="https://github.com/SwiftCarnival/swiftcarnival.github.io/issues/new?template=volunteer-to-host.yml" class="btn-outline">Volunteer</a>
     </section>
 
     <footer>

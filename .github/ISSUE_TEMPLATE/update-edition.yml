@@ -21,10 +21,18 @@ body:
     validations:
       required: true
   - type: input
+    id: announcement
+    attributes:
+      label: Announcement URL
+      description: Link to the announcement/call for posts (if status is "open")
+      placeholder: "https://example.com/swift-carnival-april-2026"
+    validations:
+      required: false
+  - type: input
     id: roundup
     attributes:
       label: Roundup URL
       description: Link to the published roundup post (if status is "published")
-      placeholder: "https://example.com/swift-carnival-april-2026"
+      placeholder: "https://example.com/swift-carnival-april-2026-roundup"
     validations:
       required: false

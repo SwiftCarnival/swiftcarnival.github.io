@@ -84,6 +84,7 @@ def approve(fields: dict) -> str:
             "host": {"name": name, "link": link},
             "topic": topic,
             "status": "upcoming",
+            "announcement": "",
             "roundup": "",
         }
         editions.append(new_entry)
@@ -121,6 +122,11 @@ def update_status(fields: dict, target_status: str) -> str:
     if entry is None:
         return f"ERROR: No edition found for {month}."
 
+    if target_status == "open":
+        announcement = fields.get("Announcement URL", "").strip()
+        if announcement:
+            entry["announcement"] = announcement
+
     if target_status == "published":
         roundup = fields.get("Roundup URL", "").strip()
         if not roundup:
@@ -131,6 +137,8 @@ def update_status(fields: dict, target_status: str) -> str:
     save_editions(data)
 
     msg = f"**{month}** updated to **{target_status}**."
+    if target_status == "open" and entry.get("announcement"):
+        msg += f"\n- Announcement: {entry['announcement']}"
     if target_status == "published" and entry.get("roundup"):
         msg += f"\n- Roundup: {entry['roundup']}"
     return msg

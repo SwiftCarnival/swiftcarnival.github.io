@@ -15,6 +15,7 @@ public struct Edition: Codable, Sendable {
     public var host: Host
     public var topic: String
     public var status: Status
+    public var announcement: String
     public var roundup: String
 
     public enum Status: String, Codable, Sendable {
@@ -23,11 +24,12 @@ public struct Edition: Codable, Sendable {
         case published
     }
 
-    public init(month: String, host: Host, topic: String, status: Status, roundup: String) {
+    public init(month: String, host: Host, topic: String, status: Status, announcement: String = "", roundup: String) {
         self.month = month
         self.host = host
         self.topic = topic
         self.status = status
+        self.announcement = announcement
         self.roundup = roundup
     }
 }

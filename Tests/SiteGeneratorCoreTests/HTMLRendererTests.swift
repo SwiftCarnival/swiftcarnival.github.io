@@ -1,10 +1,14 @@
 import Testing
 @testable import SiteGeneratorCore
 
+func edition(month: String = "2026-04", name: String = "", link: String = "", topic: String = "", status: Edition.Status = .upcoming, announcement: String = "", roundup: String = "") -> Edition {
+    Edition(month: month, host: Host(name: name, link: link), topic: topic, status: status, announcement: announcement, roundup: roundup)
+}
+
 @Suite struct FeaturedHTMLTests {
     @Test func featuredWithHost() {
-        let edition = Edition(month: "2026-05", host: Host(name: "Alice", link: "https://alice.dev"), topic: "Concurrency", status: .open, roundup: "")
-        let html = renderFeaturedHTML(edition)
+        let e = edition(month: "2026-05", name: "Alice", link: "https://alice.dev", topic: "Concurrency", status: .open)
+        let html = renderFeaturedHTML(e)
         #expect(html.contains("May 2026"))
         #expect(html.contains("<a href=\"https://alice.dev\">Alice</a>"))
         #expect(html.contains("Concurrency"))
@@ -12,22 +16,42 @@ import Testing
     }
 
     @Test func featuredWithEmptyHost() {
-        let edition = Edition(month: "2026-04", host: Host(name: "", link: ""), topic: "", status: .upcoming, roundup: "")
-        let html = renderFeaturedHTML(edition)
+        let e = edition(month: "2026-04", status: .upcoming)
+        let html = renderFeaturedHTML(e)
         #expect(html.contains("TBD"))
         #expect(!html.contains("<a href"))
+    }
+
+    @Test func featuredShowsAnnouncementWhenOpen() {
+        let e = edition(month: "2026-04", name: "Alice", topic: "Testing", status: .open, announcement: "https://example.com/call")
+        let html = renderFeaturedHTML(e)
+        #expect(html.contains("announcement-link"))
+        #expect(html.contains("https://example.com/call"))
+        #expect(html.contains("See the call for posts"))
+    }
+
+    @Test func featuredHidesAnnouncementWhenUpcoming() {
+        let e = edition(month: "2026-04", name: "Alice", status: .upcoming, announcement: "https://example.com/call")
+        let html = renderFeaturedHTML(e)
+        #expect(!html.contains("announcement-link"))
+    }
+
+    @Test func featuredHidesAnnouncementWhenEmpty() {
+        let e = edition(month: "2026-04", name: "Alice", status: .open)
+        let html = renderFeaturedHTML(e)
+        #expect(!html.contains("announcement-link"))
     }
 }
 
 @Suite struct TableHTMLTests {
     @Test func tableContainsAllEditions() {
         let editions = [
-            Edition(month: "2026-05", host: Host(name: "Alice", link: ""), topic: "Testing", status: .upcoming, roundup: ""),
-            Edition(month: "2026-04", host: Host(name: "Bob", link: "https://bob.dev"), topic: "SwiftUI", status: .published, roundup: "https://example.com"),
+            edition(month: "2026-05", name: "Alice", topic: "Testing", status: .upcoming),
+            edition(month: "2026-04", name: "Bob", link: "https://bob.dev", topic: "SwiftUI", status: .published, roundup: "https://example.com"),
         ]
         let html = renderTableHTML(editions)
-        #expect(html.contains("2026-05"))
-        #expect(html.contains("2026-04"))
+        #expect(html.contains("May 2026"))
+        #expect(html.contains("April 2026"))
         #expect(html.contains("Alice"))
         #expect(html.contains("<a href=\"https://bob.dev\">Bob</a>"))
         #expect(html.contains("badge-upcoming"))
@@ -36,27 +60,49 @@ import Testing
 
     @Test func tableShowsRoundupLink() {
         let editions = [
-            Edition(month: "2026-04", host: Host(name: "Bob", link: ""), topic: "SwiftUI", status: .published, roundup: "https://example.com/roundup"),
+            edition(month: "2026-04", name: "Bob", topic: "SwiftUI", status: .published, roundup: "https://example.com/roundup"),
         ]
         let html = renderTableHTML(editions)
         #expect(html.contains("roundup-link"))
-        #expect(html.contains("https://example.com/roundup"))
+        #expect(html.contains("Read roundup"))
+    }
+
+    @Test func tableShowsSubmitLinkWhenOpenWithAnnouncement() {
+        let editions = [
+            edition(month: "2026-04", name: "Alice", topic: "Testing", status: .open, announcement: "https://example.com/call"),
+        ]
+        let html = renderTableHTML(editions)
+        #expect(html.contains("submit-link"))
+        #expect(html.contains("Submit post"))
+        #expect(html.contains("https://example.com/call"))
+    }
+
+    @Test func tableNoSubmitLinkWhenOpenWithoutAnnouncement() {
+        let editions = [
+            edition(month: "2026-04", name: "Alice", topic: "Testing", status: .open),
+        ]
+        let html = renderTableHTML(editions)
+        #expect(!html.contains("submit-link"))
     }
 
     @Test func tableEmptyHostShowsDash() {
-        let editions = [
-            Edition(month: "2026-04", host: Host(name: "", link: ""), topic: "", status: .upcoming, roundup: ""),
-        ]
+        let editions = [edition(month: "2026-04")]
         let html = renderTableHTML(editions)
         #expect(html.contains("&mdash;"))
     }
 
-    @Test func tableShowsTopicInSpan() {
+    @Test func tableShowsTopicWithAriaHidden() {
         let editions = [
-            Edition(month: "2026-04", host: Host(name: "Alice", link: ""), topic: "Concurrency", status: .open, roundup: ""),
+            edition(month: "2026-04", name: "Alice", topic: "Concurrency", status: .open),
         ]
         let html = renderTableHTML(editions)
-        #expect(html.contains("<span class=\"ed-topic\">Concurrency</span>"))
+        #expect(html.contains("<span class=\"ed-topic\" aria-hidden=\"true\">Concurrency</span>"))
+    }
+
+    @Test func tableUsesFormattedMonths() {
+        let editions = [edition(month: "2026-12", name: "Alice")]
+        let html = renderTableHTML(editions)
+        #expect(html.contains("December 2026"))
     }
 }
 
@@ -69,8 +115,8 @@ import Testing
 
     @Test func markdownTableWithEditions() {
         let editions = [
-            Edition(month: "2026-05", host: Host(name: "Alice", link: "https://alice.dev"), topic: "Concurrency", status: .open, roundup: ""),
-            Edition(month: "2026-04", host: Host(name: "Bob", link: ""), topic: "SwiftUI", status: .published, roundup: "https://example.com/roundup"),
+            edition(month: "2026-05", name: "Alice", link: "https://alice.dev", topic: "Concurrency", status: .open),
+            edition(month: "2026-04", name: "Bob", topic: "SwiftUI", status: .published, roundup: "https://example.com/roundup"),
         ]
         let md = renderMarkdownTable(editions)
         #expect(md.contains("[Alice](https://alice.dev)"))
@@ -79,9 +125,7 @@ import Testing
     }
 
     @Test func markdownTableEmptyHostShowsTBD() {
-        let editions = [
-            Edition(month: "2026-04", host: Host(name: "", link: ""), topic: "", status: .upcoming, roundup: "")
-        ]
+        let editions = [edition(month: "2026-04")]
         let md = renderMarkdownTable(editions)
         #expect(md.contains("| TBD | TBD |"))
     }
@@ -90,29 +134,26 @@ import Testing
 @Suite struct FindFeaturedTests {
     @Test func prefersOpenOverUpcoming() {
         let editions = [
-            Edition(month: "2026-06", host: Host(name: "", link: ""), topic: "", status: .upcoming, roundup: ""),
-            Edition(month: "2026-05", host: Host(name: "Alice", link: ""), topic: "Testing", status: .open, roundup: ""),
-            Edition(month: "2026-04", host: Host(name: "", link: ""), topic: "", status: .published, roundup: "https://example.com"),
+            edition(month: "2026-06", status: .upcoming),
+            edition(month: "2026-05", name: "Alice", topic: "Testing", status: .open),
+            edition(month: "2026-04", status: .published, roundup: "https://example.com"),
         ]
-        let featured = findFeatured(editions)
-        #expect(featured?.month == "2026-05")
+        #expect(findFeatured(editions)?.month == "2026-05")
     }
 
     @Test func fallsBackToUpcoming() {
         let editions = [
-            Edition(month: "2026-06", host: Host(name: "", link: ""), topic: "", status: .upcoming, roundup: ""),
-            Edition(month: "2026-04", host: Host(name: "", link: ""), topic: "", status: .published, roundup: "https://example.com"),
+            edition(month: "2026-06", status: .upcoming),
+            edition(month: "2026-04", status: .published, roundup: "https://example.com"),
         ]
-        let featured = findFeatured(editions)
-        #expect(featured?.month == "2026-06")
+        #expect(findFeatured(editions)?.month == "2026-06")
     }
 
     @Test func fallsBackToFirst() {
         let editions = [
-            Edition(month: "2026-04", host: Host(name: "", link: ""), topic: "", status: .published, roundup: "https://example.com"),
+            edition(month: "2026-04", status: .published, roundup: "https://example.com"),
         ]
-        let featured = findFeatured(editions)
-        #expect(featured?.month == "2026-04")
+        #expect(findFeatured(editions)?.month == "2026-04")
     }
 
     @Test func emptyReturnsNil() {
