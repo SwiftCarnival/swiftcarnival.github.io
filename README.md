@@ -9,7 +9,7 @@ A monthly community blogging event for Swift developers. Each month, a volunteer
 <!-- EDITIONS:START -->
 | Month | Host | Topic | Status |
 |-------|------|-------|--------|
-| 2026-04 | TBD | TBD | upcoming |
+| 2026-04 | [Christian Tietze](https://christiantietze.de) | Tiny Languages | upcoming |
 <!-- EDITIONS:END -->
 
 ## How to Volunteer
