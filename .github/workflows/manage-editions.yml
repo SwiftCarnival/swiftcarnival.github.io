@@ -1,0 +1,93 @@
+name: Manage Editions
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    if: >
+      github.event.label.name == 'approved' ||
+      github.event.label.name == 'status-open' ||
+      github.event.label.name == 'status-published'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check maintainer
+        env:
+          ACTOR: ${{ github.actor }}
+        run: |
+          if ! grep -qx "$ACTOR" MAINTAINERS; then
+            echo "::error::$ACTOR is not listed in MAINTAINERS"
+            exit 1
+          fi
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install pyyaml
+
+      - name: Determine action
+        id: action
+        env:
+          LABEL: ${{ github.event.label.name }}
+        run: |
+          case "$LABEL" in
+            approved)         echo "action=approve" >> "$GITHUB_OUTPUT" ;;
+            status-open)      echo "action=status-open" >> "$GITHUB_OUTPUT" ;;
+            status-published) echo "action=status-published" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      - name: Update editions.yml
+        id: update
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ACTION: ${{ steps.action.outputs.action }}
+        run: |
+          RESULT=$(python scripts/update_editions.py "$ACTION" --body "$ISSUE_BODY" 2>&1) || {
+            echo "result<<EOF" >> "$GITHUB_OUTPUT"
+            echo "$RESULT" >> "$GITHUB_OUTPUT"
+            echo "EOF" >> "$GITHUB_OUTPUT"
+            echo "failed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          }
+          echo "result<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$RESULT" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Comment on error and remove label
+        if: steps.update.outputs.failed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ github.event.issue.number }}
+          LABEL: ${{ github.event.label.name }}
+          RESULT: ${{ steps.update.outputs.result }}
+        run: |
+          gh issue comment "$ISSUE" -R "$GITHUB_REPOSITORY" --body "$RESULT"
+          gh issue label remove "$LABEL" -R "$GITHUB_REPOSITORY" "$ISSUE"
+
+      - name: Commit and push
+        if: steps.update.outputs.failed != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/editions.yml
+          git commit -m "Update editions.yml from issue #${{ github.event.issue.number }}"
+          git push
+
+      - name: Comment, remove needs-review, and close issue
+        if: steps.update.outputs.failed != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ github.event.issue.number }}
+          RESULT: ${{ steps.update.outputs.result }}
+        run: |
+          gh issue comment "$ISSUE" -R "$GITHUB_REPOSITORY" --body "$RESULT"
+          gh issue label remove "needs-review" -R "$GITHUB_REPOSITORY" "$ISSUE" || true
+          gh issue close "$ISSUE" -R "$GITHUB_REPOSITORY"
