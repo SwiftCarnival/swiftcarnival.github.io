@@ -101,7 +101,7 @@ def approve(fields: dict) -> str:
 
 
 def update_status(fields: dict, target_status: str) -> str:
-    month = fields.get("Edition month", "").strip()
+    month = (fields.get("Edition month", "") or fields.get("Month", "")).strip()
 
     if not month:
         return "ERROR: Missing edition month."

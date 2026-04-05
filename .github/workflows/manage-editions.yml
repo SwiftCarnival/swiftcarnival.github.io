@@ -71,7 +71,7 @@ jobs:
           RESULT: ${{ steps.update.outputs.result }}
         run: |
           gh issue comment "$ISSUE" -R "$GITHUB_REPOSITORY" --body "$RESULT"
-          gh issue label remove "$LABEL" -R "$GITHUB_REPOSITORY" "$ISSUE"
+          gh issue edit "$ISSUE" -R "$GITHUB_REPOSITORY" --remove-label "$LABEL"
 
       - name: Commit and push
         if: steps.update.outputs.failed != 'true'
@@ -96,5 +96,5 @@ jobs:
           RESULT: ${{ steps.update.outputs.result }}
         run: |
           gh issue comment "$ISSUE" -R "$GITHUB_REPOSITORY" --body "$RESULT"
-          gh issue label remove "needs-review" -R "$GITHUB_REPOSITORY" "$ISSUE" || true
+          gh issue edit "$ISSUE" -R "$GITHUB_REPOSITORY" --remove-label "needs-review" || true
           gh issue close "$ISSUE" -R "$GITHUB_REPOSITORY"
