@@ -1,7 +1,7 @@
 name: Update Edition
 description: Update an edition's status or add a roundup link
 title: "Update: [MONTH]"
-labels: ["update"]
+labels: ["update", "needs-review"]
 body:
   - type: input
     id: month

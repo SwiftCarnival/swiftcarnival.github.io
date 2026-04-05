@@ -1,7 +1,7 @@
 name: Volunteer to Host
 description: Sign up to host a Swift Blog Carnival edition
 title: "Host: [MONTH]"
-labels: ["volunteer"]
+labels: ["volunteer", "needs-review"]
 body:
   - type: input
     id: month
