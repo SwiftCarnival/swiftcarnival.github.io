@@ -48,7 +48,7 @@ def save_editions(data: dict) -> None:
 
 
 def approve(fields: dict) -> str:
-    month = fields.get("Month", "").strip()
+    month = (fields.get("Month", "") or fields.get("Edition month", "")).strip()
     name = fields.get("Your name", "").strip()
     link = fields.get("Your blog or profile URL", "").strip()
     topic = fields.get("Proposed topic", "").strip()
