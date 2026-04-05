@@ -86,8 +86,8 @@ header p {
     color: var(--text-secondary);
 }
 
-.featured-detail a { color: var(--link); text-decoration: none; }
-.featured-detail a:hover { text-decoration: underline; }
+.featured-detail a { color: var(--link); text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 3px; }
+.featured-detail a:hover { text-decoration-color: var(--link); }
 
 .badge {
     display: inline-block;
@@ -138,8 +138,8 @@ header p {
     color: var(--text-secondary);
 }
 
-.ed-info a { color: var(--text); text-decoration: none; }
-.ed-info a:hover { text-decoration: underline; }
+.ed-info a { color: var(--link); text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 3px; }
+.ed-info a:hover { text-decoration-color: var(--link); }
 
 .ed-topic { color: var(--text-tertiary); font-size: 0.85rem; }
 .ed-topic::before { content: " — "; }
