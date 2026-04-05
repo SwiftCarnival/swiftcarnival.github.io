@@ -1,8 +1,8 @@
 editions:
-  - month: "2026-04"
-    host:
-      name: ""
-      link: ""
-    topic: ""
-    status: "upcoming"
-    roundup: ""
+- month: 2026-04
+  host:
+    name: Christian Tietze
+    link: https://christiantietze.de
+  topic: Tiny Languages
+  status: upcoming
+  roundup: ''
