@@ -13,13 +13,15 @@ public func renderMarkdownTable(_ editions: [Edition]) -> String {
 
         let topicDisplay = edition.topic.isEmpty ? "TBD" : edition.topic
 
-        let roundupNote: String = if edition.status == .published && !edition.roundup.isEmpty {
+        let statusLinks: String = if edition.status == .open && !edition.announcement.isEmpty {
+            " ([announcement](\(edition.announcement)))"
+        } else if edition.status == .published && !edition.roundup.isEmpty {
             " ([roundup](\(edition.roundup)))"
         } else {
             ""
         }
 
-        lines.append("| \(edition.month) | \(hostCell) | \(topicDisplay) | \(edition.status.rawValue)\(roundupNote) |")
+        lines.append("| \(edition.month) | \(hostCell) | \(topicDisplay) | \(edition.status.rawValue)\(statusLinks) |")
     }
 
     return lines.joined(separator: "\n")

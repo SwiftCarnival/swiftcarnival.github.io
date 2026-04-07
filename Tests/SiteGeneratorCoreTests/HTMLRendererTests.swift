@@ -113,13 +113,22 @@ func edition(month: String = "2026-04", name: String = "", link: String = "", to
 
     @Test func markdownTableWithEditions() {
         let editions = [
-            edition(month: "2026-05", name: "Alice", link: "https://alice.dev", topic: "Concurrency", status: .open),
+            edition(month: "2026-05", name: "Alice", link: "https://alice.dev", topic: "Concurrency", status: .open, announcement: "https://example.com/call"),
             edition(month: "2026-04", name: "Bob", topic: "SwiftUI", status: .published, roundup: "https://example.com/roundup"),
         ]
         let md = renderMarkdownTable(editions)
         #expect(md.contains("[Alice](https://alice.dev)"))
         #expect(md.contains("| Bob |"))
+        #expect(md.contains("[announcement](https://example.com/call)"))
         #expect(md.contains("[roundup](https://example.com/roundup)"))
+    }
+
+    @Test func markdownTableNoAnnouncementWhenEmpty() {
+        let editions = [
+            edition(month: "2026-05", name: "Alice", topic: "Concurrency", status: .open),
+        ]
+        let md = renderMarkdownTable(editions)
+        #expect(!md.contains("announcement"))
     }
 
     @Test func markdownTableEmptyHostShowsTBD() {
