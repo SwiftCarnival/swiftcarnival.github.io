@@ -41,7 +41,7 @@ func edition(month: String = "2026-04", name: String = "", link: String = "", to
 
 @Suite struct TableHTMLTests {
     @Test func tableContainsAllEditions() {
-        let html = render(renderTableHTML([
+        let html = render(renderEditionList([
             edition(month: "2026-05", name: "Alice", topic: "Testing", status: .upcoming),
             edition(month: "2026-04", name: "Bob", link: "https://bob.dev", topic: "SwiftUI", status: .published, roundup: "https://example.com"),
         ]))
@@ -54,7 +54,7 @@ func edition(month: String = "2026-04", name: String = "", link: String = "", to
     }
 
     @Test func tableShowsRoundupLink() {
-        let html = render(renderTableHTML([
+        let html = render(renderEditionList([
             edition(month: "2026-04", name: "Bob", topic: "SwiftUI", status: .published, roundup: "https://example.com/roundup"),
         ]))
         #expect(html.contains("edition__link--roundup"))
@@ -62,7 +62,7 @@ func edition(month: String = "2026-04", name: String = "", link: String = "", to
     }
 
     @Test func tableShowsSubmitLinkWhenOpenWithAnnouncement() {
-        let html = render(renderTableHTML([
+        let html = render(renderEditionList([
             edition(month: "2026-04", name: "Alice", topic: "Testing", status: .open, announcement: "https://example.com/call"),
         ]))
         #expect(html.contains("edition__link--submit"))
@@ -71,19 +71,19 @@ func edition(month: String = "2026-04", name: String = "", link: String = "", to
     }
 
     @Test func tableNoSubmitLinkWhenOpenWithoutAnnouncement() {
-        let html = render(renderTableHTML([
+        let html = render(renderEditionList([
             edition(month: "2026-04", name: "Alice", topic: "Testing", status: .open),
         ]))
         #expect(!html.contains("edition__link--submit"))
     }
 
     @Test func tableEmptyHostShowsDash() {
-        let html = render(renderTableHTML([edition(month: "2026-04")]))
+        let html = render(renderEditionList([edition(month: "2026-04")]))
         #expect(html.contains("&mdash;"))
     }
 
     @Test func tableShowsTopicWithAriaHidden() {
-        let html = render(renderTableHTML([
+        let html = render(renderEditionList([
             edition(month: "2026-04", name: "Alice", topic: "Concurrency", status: .open),
         ]))
         #expect(html.contains(#"aria-hidden="true""#))
@@ -92,12 +92,12 @@ func edition(month: String = "2026-04", name: String = "", link: String = "", to
     }
 
     @Test func tableUsesFormattedMonths() {
-        let html = render(renderTableHTML([edition(month: "2026-12", name: "Alice")]))
+        let html = render(renderEditionList([edition(month: "2026-12", name: "Alice")]))
         #expect(html.contains("December 2026"))
     }
 
     @Test func tableWrappedInReversedOl() {
-        let html = render(renderTableHTML([edition(month: "2026-04")]))
+        let html = render(renderEditionList([edition(month: "2026-04")]))
         #expect(html.contains("<ol"))
         #expect(html.contains("edition-list"))
         #expect(html.contains("reversed"))

@@ -1,6 +1,6 @@
 import Html
 
-public func renderTableHTML(_ editions: [Edition]) -> Node {
+public func renderEditionList(_ editions: [Edition]) -> Node {
     .ol(attributes: [.class("edition-list"), .reversed(true)], editions.map { edition in
         let topicNode: Node = if !edition.topic.isEmpty {
             .span(attributes: [.class("edition__topic"), .ariaHidden(.true)], .text(edition.topic))
@@ -34,39 +34,3 @@ public func renderTableHTML(_ editions: [Edition]) -> Node {
     })
 }
 
-public func renderMarkdownTable(_ editions: [Edition]) -> String {
-    var lines = [
-        "| Month | Host | Topic | Status |",
-        "|-------|------|-------|--------|",
-    ]
-
-    for edition in editions {
-        let hostCell: String = if !edition.host.link.isEmpty {
-            "[\(edition.host.displayName)](\(edition.host.link))"
-        } else {
-            edition.host.displayName
-        }
-
-        let topicDisplay = edition.topic.isEmpty ? "TBD" : edition.topic
-
-        let roundupNote: String = if edition.status == .published && !edition.roundup.isEmpty {
-            " ([roundup](\(edition.roundup)))"
-        } else {
-            ""
-        }
-
-        lines.append("| \(edition.month) | \(hostCell) | \(topicDisplay) | \(edition.status.rawValue)\(roundupNote) |")
-    }
-
-    return lines.joined(separator: "\n")
-}
-
-public func findFeatured(_ editions: [Edition]) -> Edition? {
-    if let open = editions.reversed().first(where: { $0.status == .open }) {
-        return open
-    }
-    if let upcoming = editions.reversed().first(where: { $0.status == .upcoming }) {
-        return upcoming
-    }
-    return editions.first
-}

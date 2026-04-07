@@ -37,7 +37,7 @@ struct GenerateCommand: ParsableCommand {
         try validateEditions(data.editions)
 
         let featuredNode = findFeatured(data.editions).map { renderFeaturedHTML($0) }
-        let editionItems = renderTableHTML(data.editions)
+        let editionItems = renderEditionList(data.editions)
         let html = render(renderPage(featured: featuredNode, editionItems: editionItems))
 
         let outputDir = "output"
