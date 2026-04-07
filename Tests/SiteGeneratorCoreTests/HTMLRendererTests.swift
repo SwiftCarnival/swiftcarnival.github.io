@@ -8,8 +8,7 @@ func edition(month: String = "2026-04", name: String = "", link: String = "", to
 
 @Suite struct FeaturedHTMLTests {
     @Test func featuredWithHost() {
-        let node = renderFeaturedHTML(edition(month: "2026-05", name: "Alice", link: "https://alice.dev", topic: "Concurrency", status: .open))
-        let html = render(node)
+        let html = render(renderFeaturedHTML(edition(month: "2026-05", name: "Alice", link: "https://alice.dev", topic: "Concurrency", status: .open)))
         #expect(html.contains("May 2026"))
         #expect(html.contains(#"<a href="https://alice.dev">Alice</a>"#))
         #expect(html.contains("Concurrency"))
@@ -42,11 +41,10 @@ func edition(month: String = "2026-04", name: String = "", link: String = "", to
 
 @Suite struct TableHTMLTests {
     @Test func tableContainsAllEditions() {
-        let editions = [
+        let html = render(renderTableHTML([
             edition(month: "2026-05", name: "Alice", topic: "Testing", status: .upcoming),
             edition(month: "2026-04", name: "Bob", link: "https://bob.dev", topic: "SwiftUI", status: .published, roundup: "https://example.com"),
-        ]
-        let html = renderTableHTML(editions).map { render($0) }.joined()
+        ]))
         #expect(html.contains("May 2026"))
         #expect(html.contains("April 2026"))
         #expect(html.contains("Alice"))
@@ -56,47 +54,53 @@ func edition(month: String = "2026-04", name: String = "", link: String = "", to
     }
 
     @Test func tableShowsRoundupLink() {
-        let html = renderTableHTML([
+        let html = render(renderTableHTML([
             edition(month: "2026-04", name: "Bob", topic: "SwiftUI", status: .published, roundup: "https://example.com/roundup"),
-        ]).map { render($0) }.joined()
+        ]))
         #expect(html.contains("edition__link--roundup"))
         #expect(html.contains("Read roundup"))
     }
 
     @Test func tableShowsSubmitLinkWhenOpenWithAnnouncement() {
-        let html = renderTableHTML([
+        let html = render(renderTableHTML([
             edition(month: "2026-04", name: "Alice", topic: "Testing", status: .open, announcement: "https://example.com/call"),
-        ]).map { render($0) }.joined()
+        ]))
         #expect(html.contains("edition__link--submit"))
         #expect(html.contains("Submit post"))
         #expect(html.contains("https://example.com/call"))
     }
 
     @Test func tableNoSubmitLinkWhenOpenWithoutAnnouncement() {
-        let html = renderTableHTML([
+        let html = render(renderTableHTML([
             edition(month: "2026-04", name: "Alice", topic: "Testing", status: .open),
-        ]).map { render($0) }.joined()
+        ]))
         #expect(!html.contains("edition__link--submit"))
     }
 
     @Test func tableEmptyHostShowsDash() {
-        let html = renderTableHTML([edition(month: "2026-04")]).map { render($0) }.joined()
+        let html = render(renderTableHTML([edition(month: "2026-04")]))
         #expect(html.contains("&mdash;"))
     }
 
     @Test func tableShowsTopicWithAriaHidden() {
-        let items = renderTableHTML([
+        let html = render(renderTableHTML([
             edition(month: "2026-04", name: "Alice", topic: "Concurrency", status: .open),
-        ])
-        let html = render(items[0])
+        ]))
         #expect(html.contains(#"aria-hidden="true""#))
         #expect(html.contains("Concurrency"))
         #expect(html.contains("edition__topic"))
     }
 
     @Test func tableUsesFormattedMonths() {
-        let html = renderTableHTML([edition(month: "2026-12", name: "Alice")]).map { render($0) }.joined()
+        let html = render(renderTableHTML([edition(month: "2026-12", name: "Alice")]))
         #expect(html.contains("December 2026"))
+    }
+
+    @Test func tableWrappedInReversedOl() {
+        let html = render(renderTableHTML([edition(month: "2026-04")]))
+        #expect(html.contains("<ol"))
+        #expect(html.contains("edition-list"))
+        #expect(html.contains("reversed"))
     }
 }
 
@@ -152,5 +156,21 @@ func edition(month: String = "2026-04", name: String = "", link: String = "", to
 
     @Test func emptyReturnsNil() {
         #expect(findFeatured([]) == nil)
+    }
+}
+
+@Suite struct PageHTMLTests {
+    @Test func pageContainsDoctype() {
+        let html = render(renderPage(featured: nil, editionItems: []))
+        #expect(html.hasPrefix("<!DOCTYPE html>"))
+    }
+
+    @Test func pageContainsStructure() {
+        let html = render(renderPage(featured: nil, editionItems: []))
+        #expect(html.contains("Swift Blog Carnival"))
+        #expect(html.contains("section-label"))
+        #expect(html.contains("volunteer"))
+        #expect(html.contains("cta--outline"))
+        #expect(html.contains(#"lang="en""#))
     }
 }

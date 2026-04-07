@@ -36,15 +36,9 @@ struct GenerateCommand: ParsableCommand {
         let data = try loadEditions()
         try validateEditions(data.editions)
 
-        let template = try String(contentsOfFile: "Resources/templates/index.html.tpl", encoding: .utf8)
-
-        let featured = findFeatured(data.editions)
-        let featuredHTML = featured.map { render(renderFeaturedHTML($0)) } ?? ""
-        let tableHTML = renderTableHTML(data.editions).map { render($0) }.joined()
-
-        let html = template
-            .replacingOccurrences(of: "{{FEATURED}}", with: featuredHTML)
-            .replacingOccurrences(of: "{{TABLE}}", with: tableHTML)
+        let featuredNode = findFeatured(data.editions).map { renderFeaturedHTML($0) }
+        let editionItems = renderTableHTML(data.editions)
+        let html = render(renderPage(featured: featuredNode, editionItems: editionItems))
 
         let outputDir = "output"
         try FileManager.default.createDirectory(atPath: outputDir, withIntermediateDirectories: true)
