@@ -6,59 +6,71 @@ extension Node {
     }
 }
 
-func badgeClass(_ status: Edition.Status) -> String {
-    switch status {
-    case .upcoming: "badge badge--upcoming"
-    case .open: "badge badge--open"
-    case .published: "badge badge--published"
+extension Edition {
+    var formattedMonth: String { formatMonth(month) }
+}
+
+extension Edition.Status {
+    var badgeClass: String {
+        switch self {
+        case .upcoming: "badge badge--upcoming"
+        case .open: "badge badge--open"
+        case .published: "badge badge--published"
+        }
+    }
+
+    var badgeNode: Node {
+        .span(attributes: [.class(badgeClass)], .text(rawValue))
+    }
+}
+
+extension Host {
+    var displayName: String { name.isEmpty ? "TBD" : name }
+
+    func linkNode(rawFallback: String? = nil) -> Node {
+        if !link.isEmpty {
+            .a(attributes: [.href(link)], .text(rawFallback ?? displayName))
+        } else if let rawFallback {
+            .raw(rawFallback)
+        } else {
+            .text(displayName)
+        }
     }
 }
 
 public func renderFeaturedHTML(_ edition: Edition) -> Node {
-    let hostDisplay = edition.host.name.isEmpty ? "TBD" : edition.host.name
-    let topicDisplay = edition.topic.isEmpty ? "TBD" : edition.topic
-    let monthDisplay = formatMonth(edition.month)
-
     let hostContent: Node = if !edition.host.link.isEmpty {
-        "Hosted by \(.a(attributes: [.href(edition.host.link)], .text(hostDisplay)))"
+        "Hosted by \(.a(attributes: [.href(edition.host.link)], .text(edition.host.displayName)))"
     } else {
-        "Hosted by \(hostDisplay)"
+        "Hosted by \(edition.host.displayName)"
     }
+
+    let topicDisplay = edition.topic.isEmpty ? "TBD" : edition.topic
 
     let ctaNode: Node = if edition.status == .open && !edition.announcement.isEmpty {
         .div(attributes: [.class("featured__cta")],
             .a(attributes: [
                 .href(edition.announcement),
                 .class("cta cta--primary"),
-                .ariaLabel("See the call for posts for \(monthDisplay): \(topicDisplay)"),
+                .ariaLabel("See the call for posts for \(edition.formattedMonth): \(topicDisplay)"),
             ], .text("See the call for posts "), .raw("&rarr;")))
     } else {
         []
     }
 
     return .article(attributes: [.class("featured")],
-        .span(attributes: [.class("featured__month")], .text(monthDisplay)),
+        .span(attributes: [.class("featured__month")], .text(edition.formattedMonth)),
         .span(attributes: [.class("featured__host")], hostContent),
         .span(attributes: [.class("featured__topic")], .text(topicDisplay)),
-        .span(attributes: [.class(badgeClass(edition.status))], .text(edition.status.rawValue)),
+        edition.status.badgeNode,
         ctaNode
     )
 }
 
 public func renderTableHTML(_ editions: [Edition]) -> Node {
     .ol(attributes: [.class("edition-list"), .reversed(true)], editions.map { edition in
-        let hostDisplay = edition.host.name.isEmpty ? "&mdash;" : edition.host.name
-        let topicDisplay = edition.topic.isEmpty ? "" : edition.topic
-        let monthDisplay = formatMonth(edition.month)
-
-        let hostContent: Node = if !edition.host.link.isEmpty {
-            .a(attributes: [.href(edition.host.link)], .text(hostDisplay))
-        } else {
-            .raw(hostDisplay)
-        }
-
-        let topicNode: Node = if !topicDisplay.isEmpty {
-            .span(attributes: [.class("edition__topic"), .ariaHidden(.true)], .text(topicDisplay))
+        let topicNode: Node = if !edition.topic.isEmpty {
+            .span(attributes: [.class("edition__topic"), .ariaHidden(.true)], .text(edition.topic))
         } else {
             []
         }
@@ -67,29 +79,30 @@ public func renderTableHTML(_ editions: [Edition]) -> Node {
             .a(attributes: [
                 .href(edition.announcement),
                 .class("edition__link edition__link--submit"),
-                .ariaLabel("Submit a post for \(monthDisplay): \(topicDisplay)"),
+                .ariaLabel("Submit a post for \(edition.formattedMonth): \(edition.topic)"),
             ], .text("Submit post "), .raw("&rarr;"))
         } else if edition.status == .published && !edition.roundup.isEmpty {
             .a(attributes: [
                 .href(edition.roundup),
                 .class("edition__link edition__link--roundup"),
-                .ariaLabel("Read the roundup for \(monthDisplay): \(topicDisplay)"),
+                .ariaLabel("Read the roundup for \(edition.formattedMonth): \(edition.topic)"),
             ], .text("Read roundup "), .raw("&rarr;"))
         } else {
             []
         }
 
         return .li(attributes: [.class("edition")],
-            .span(attributes: [.class("edition__month")], .text(monthDisplay)),
-            .span(attributes: [.class("edition__host")], hostContent, topicNode),
-            .span(attributes: [.class("edition__actions")], actionNode,
-                .span(attributes: [.class(badgeClass(edition.status))], .text(edition.status.rawValue)))
+            .span(attributes: [.class("edition__month")], .text(edition.formattedMonth)),
+            .span(attributes: [.class("edition__host")],
+                edition.host.linkNode(rawFallback: edition.host.name.isEmpty ? "&mdash;" : nil),
+                topicNode),
+            .span(attributes: [.class("edition__actions")], actionNode, edition.status.badgeNode)
         )
     })
 }
 
 public func renderPage(featured: Node?, editionItems: Node) -> Node {
-    return .document(
+    .document(
         .html(attributes: [.lang(.en)],
             .head(
                 .meta(attributes: [.charset(.utf8)]),
@@ -143,21 +156,18 @@ public func renderMarkdownTable(_ editions: [Edition]) -> String {
     ]
 
     for edition in editions {
-        let hostDisplay = edition.host.name.isEmpty ? "TBD" : edition.host.name
-        let topicDisplay = edition.topic.isEmpty ? "TBD" : edition.topic
-
-        let hostCell: String
-        if !edition.host.link.isEmpty {
-            hostCell = "[\(hostDisplay)](\(edition.host.link))"
+        let hostCell: String = if !edition.host.link.isEmpty {
+            "[\(edition.host.displayName)](\(edition.host.link))"
         } else {
-            hostCell = hostDisplay
+            edition.host.displayName
         }
 
-        let roundupNote: String
-        if edition.status == .published && !edition.roundup.isEmpty {
-            roundupNote = " ([roundup](\(edition.roundup)))"
+        let topicDisplay = edition.topic.isEmpty ? "TBD" : edition.topic
+
+        let roundupNote: String = if edition.status == .published && !edition.roundup.isEmpty {
+            " ([roundup](\(edition.roundup)))"
         } else {
-            roundupNote = ""
+            ""
         }
 
         lines.append("| \(edition.month) | \(hostCell) | \(topicDisplay) | \(edition.status.rawValue)\(roundupNote) |")
