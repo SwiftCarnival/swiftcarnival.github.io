@@ -1,92 +1,98 @@
-import Foundation
+import Html
 
-public func renderFeaturedHTML(_ edition: Edition) -> String {
+public func renderFeaturedHTML(_ edition: Edition) -> Node {
     let hostDisplay = edition.host.name.isEmpty ? "TBD" : edition.host.name
     let topicDisplay = edition.topic.isEmpty ? "TBD" : edition.topic
     let monthDisplay = formatMonth(edition.month)
 
-    let hostValue: String
+    let hostContent: Node
     if !edition.host.link.isEmpty {
-        hostValue = "Hosted by <a href=\"\(edition.host.link)\">\(hostDisplay)</a>"
+        hostContent = .fragment([
+            .text("Hosted by "),
+            .a(attributes: [.href(edition.host.link)], .text(hostDisplay)),
+        ])
     } else {
-        hostValue = "Hosted by \(hostDisplay)"
+        hostContent = .text("Hosted by \(hostDisplay)")
     }
 
-    let badgeClass: String
-    switch edition.status {
-    case .upcoming: badgeClass = "badge--upcoming"
-    case .open: badgeClass = "badge--open"
-    case .published: badgeClass = "badge--published"
-    }
+    let badgeClass = "badge \(badgeModifier(edition.status))"
 
-    var html = """
-    <article class="featured">
-        <span class="featured__month">\(monthDisplay)</span>
-        <span class="featured__host">\(hostValue)</span>
-        <span class="featured__topic">\(topicDisplay)</span>
-        <span class="badge \(badgeClass)">\(edition.status.rawValue)</span>
-    """
+    var children: [Node] = [
+        .span(attributes: [.class("featured__month")], .text(monthDisplay)),
+        .span(attributes: [.class("featured__host")], hostContent),
+        .span(attributes: [.class("featured__topic")], .text(topicDisplay)),
+        .span(attributes: [.class(badgeClass)], .text(edition.status.rawValue)),
+    ]
 
     if edition.status == .open && !edition.announcement.isEmpty {
-        html += """
-
-            <div class="featured__cta">
-                <a href="\(edition.announcement)" class="cta cta--primary" aria-label="See the call for posts for \(monthDisplay): \(topicDisplay)">See the call for posts &rarr;</a>
-            </div>
-        """
+        children.append(
+            .div(attributes: [.class("featured__cta")],
+                .a(attributes: [
+                    .href(edition.announcement),
+                    .class("cta cta--primary"),
+                    .ariaLabel("See the call for posts for \(monthDisplay): \(topicDisplay)"),
+                ], .text("See the call for posts "), .raw("&rarr;"))
+            )
+        )
     }
 
-    html += "\n</article>"
-    return html
+    return .article(attributes: [.class("featured")], .fragment(children))
 }
 
-public func renderTableHTML(_ editions: [Edition]) -> String {
-    var items = ""
-    for edition in editions {
+public func renderTableHTML(_ editions: [Edition]) -> [ChildOf<Tag.Ol>] {
+    editions.map { edition in
         let hostDisplay = edition.host.name.isEmpty ? "&mdash;" : edition.host.name
         let topicDisplay = edition.topic.isEmpty ? "" : edition.topic
         let monthDisplay = formatMonth(edition.month)
 
-        let hostHTML: String
+        let hostContent: Node
         if !edition.host.link.isEmpty {
-            hostHTML = "<a href=\"\(edition.host.link)\">\(hostDisplay)</a>"
+            hostContent = .a(attributes: [.href(edition.host.link)], .text(hostDisplay))
         } else {
-            hostHTML = hostDisplay
+            hostContent = .raw(hostDisplay)
         }
 
-        let topicHTML: String
+        let topicNode: Node
         if !topicDisplay.isEmpty {
-            topicHTML = "<span class=\"edition__topic\" aria-hidden=\"true\">\(topicDisplay)</span>"
+            topicNode = .span(attributes: [.class("edition__topic"), .ariaHidden(.true)], .text(topicDisplay))
         } else {
-            topicHTML = ""
+            topicNode = .fragment([])
         }
 
-        let badgeClass: String
-        switch edition.status {
-        case .upcoming: badgeClass = "badge--upcoming"
-        case .open: badgeClass = "badge--open"
-        case .published: badgeClass = "badge--published"
-        }
+        let badgeClass = "badge \(badgeModifier(edition.status))"
 
-        let actionHTML: String
+        let actionNode: Node
         if edition.status == .open && !edition.announcement.isEmpty {
-            actionHTML = "<a href=\"\(edition.announcement)\" class=\"edition__link edition__link--submit\" aria-label=\"Submit a post for \(monthDisplay): \(topicDisplay)\">Submit post &rarr;</a>"
+            actionNode = .a(attributes: [
+                .href(edition.announcement),
+                .class("edition__link edition__link--submit"),
+                .ariaLabel("Submit a post for \(monthDisplay): \(topicDisplay)"),
+            ], .text("Submit post "), .raw("&rarr;"))
         } else if edition.status == .published && !edition.roundup.isEmpty {
-            actionHTML = "<a href=\"\(edition.roundup)\" class=\"edition__link edition__link--roundup\" aria-label=\"Read the roundup for \(monthDisplay): \(topicDisplay)\">Read roundup &rarr;</a>"
+            actionNode = .a(attributes: [
+                .href(edition.roundup),
+                .class("edition__link edition__link--roundup"),
+                .ariaLabel("Read the roundup for \(monthDisplay): \(topicDisplay)"),
+            ], .text("Read roundup "), .raw("&rarr;"))
         } else {
-            actionHTML = ""
+            actionNode = .fragment([])
         }
 
-        items += """
-            <li class="edition">
-                <span class="edition__month">\(monthDisplay)</span>
-                <span class="edition__host">\(hostHTML)\(topicHTML)</span>
-                <span class="edition__actions">\(actionHTML)<span class="badge \(badgeClass)">\(edition.status.rawValue)</span></span>
-            </li>\n
-        """
+        return ChildOf<Tag.Ol>.li(attributes: [.class("edition")],
+            .span(attributes: [.class("edition__month")], .text(monthDisplay)),
+            .span(attributes: [.class("edition__host")], hostContent, topicNode),
+            .span(attributes: [.class("edition__actions")], actionNode,
+                .span(attributes: [.class(badgeClass)], .text(edition.status.rawValue)))
+        )
     }
+}
 
-    return items
+func badgeModifier(_ status: Edition.Status) -> String {
+    switch status {
+    case .upcoming: "badge--upcoming"
+    case .open: "badge--open"
+    case .published: "badge--published"
+    }
 }
 
 public func renderMarkdownTable(_ editions: [Edition]) -> String {
@@ -129,7 +135,7 @@ public func findFeatured(_ editions: [Edition]) -> Edition? {
     return editions.first
 }
 
-func formatMonth(_ month: String) -> String {
+public func formatMonth(_ month: String) -> String {
     let parts = month.split(separator: "-")
     guard parts.count == 2,
           let monthNum = Int(parts[1]) else { return month }

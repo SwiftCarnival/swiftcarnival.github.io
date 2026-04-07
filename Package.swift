@@ -8,11 +8,15 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/jpsim/Yams.git", from: "5.0.0"),
         .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.3.0"),
+        .package(url: "https://github.com/pointfreeco/swift-html.git", from: "0.4.1"),
     ],
     targets: [
         .target(
             name: "SiteGeneratorCore",
-            dependencies: ["Yams"],
+            dependencies: [
+                "Yams",
+                .product(name: "Html", package: "swift-html"),
+            ],
             path: "Sources/SiteGeneratorCore"
         ),
         .executableTarget(

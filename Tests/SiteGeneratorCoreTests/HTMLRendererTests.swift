@@ -1,3 +1,4 @@
+import Html
 import Testing
 @testable import SiteGeneratorCore
 
@@ -7,38 +8,34 @@ func edition(month: String = "2026-04", name: String = "", link: String = "", to
 
 @Suite struct FeaturedHTMLTests {
     @Test func featuredWithHost() {
-        let e = edition(month: "2026-05", name: "Alice", link: "https://alice.dev", topic: "Concurrency", status: .open)
-        let html = renderFeaturedHTML(e)
+        let node = renderFeaturedHTML(edition(month: "2026-05", name: "Alice", link: "https://alice.dev", topic: "Concurrency", status: .open))
+        let html = render(node)
         #expect(html.contains("May 2026"))
-        #expect(html.contains("<a href=\"https://alice.dev\">Alice</a>"))
+        #expect(html.contains(#"<a href="https://alice.dev">Alice</a>"#))
         #expect(html.contains("Concurrency"))
         #expect(html.contains("badge--open"))
     }
 
     @Test func featuredWithEmptyHost() {
-        let e = edition(month: "2026-04", status: .upcoming)
-        let html = renderFeaturedHTML(e)
+        let html = render(renderFeaturedHTML(edition(month: "2026-04", status: .upcoming)))
         #expect(html.contains("TBD"))
-        #expect(!html.contains("<a href"))
+        #expect(!html.contains("<a "))
     }
 
     @Test func featuredShowsAnnouncementWhenOpen() {
-        let e = edition(month: "2026-04", name: "Alice", topic: "Testing", status: .open, announcement: "https://example.com/call")
-        let html = renderFeaturedHTML(e)
+        let html = render(renderFeaturedHTML(edition(month: "2026-04", name: "Alice", topic: "Testing", status: .open, announcement: "https://example.com/call")))
         #expect(html.contains("cta--primary"))
         #expect(html.contains("https://example.com/call"))
         #expect(html.contains("See the call for posts"))
     }
 
     @Test func featuredHidesAnnouncementWhenUpcoming() {
-        let e = edition(month: "2026-04", name: "Alice", status: .upcoming, announcement: "https://example.com/call")
-        let html = renderFeaturedHTML(e)
+        let html = render(renderFeaturedHTML(edition(month: "2026-04", name: "Alice", status: .upcoming, announcement: "https://example.com/call")))
         #expect(!html.contains("cta--primary"))
     }
 
     @Test func featuredHidesAnnouncementWhenEmpty() {
-        let e = edition(month: "2026-04", name: "Alice", status: .open)
-        let html = renderFeaturedHTML(e)
+        let html = render(renderFeaturedHTML(edition(month: "2026-04", name: "Alice", status: .open)))
         #expect(!html.contains("cta--primary"))
     }
 }
@@ -49,59 +46,56 @@ func edition(month: String = "2026-04", name: String = "", link: String = "", to
             edition(month: "2026-05", name: "Alice", topic: "Testing", status: .upcoming),
             edition(month: "2026-04", name: "Bob", link: "https://bob.dev", topic: "SwiftUI", status: .published, roundup: "https://example.com"),
         ]
-        let html = renderTableHTML(editions)
+        let html = renderTableHTML(editions).map { render($0) }.joined()
         #expect(html.contains("May 2026"))
         #expect(html.contains("April 2026"))
         #expect(html.contains("Alice"))
-        #expect(html.contains("<a href=\"https://bob.dev\">Bob</a>"))
+        #expect(html.contains(#"<a href="https://bob.dev">Bob</a>"#))
         #expect(html.contains("badge--upcoming"))
         #expect(html.contains("badge--published"))
     }
 
     @Test func tableShowsRoundupLink() {
-        let editions = [
+        let html = renderTableHTML([
             edition(month: "2026-04", name: "Bob", topic: "SwiftUI", status: .published, roundup: "https://example.com/roundup"),
-        ]
-        let html = renderTableHTML(editions)
+        ]).map { render($0) }.joined()
         #expect(html.contains("edition__link--roundup"))
         #expect(html.contains("Read roundup"))
     }
 
     @Test func tableShowsSubmitLinkWhenOpenWithAnnouncement() {
-        let editions = [
+        let html = renderTableHTML([
             edition(month: "2026-04", name: "Alice", topic: "Testing", status: .open, announcement: "https://example.com/call"),
-        ]
-        let html = renderTableHTML(editions)
+        ]).map { render($0) }.joined()
         #expect(html.contains("edition__link--submit"))
         #expect(html.contains("Submit post"))
         #expect(html.contains("https://example.com/call"))
     }
 
     @Test func tableNoSubmitLinkWhenOpenWithoutAnnouncement() {
-        let editions = [
+        let html = renderTableHTML([
             edition(month: "2026-04", name: "Alice", topic: "Testing", status: .open),
-        ]
-        let html = renderTableHTML(editions)
+        ]).map { render($0) }.joined()
         #expect(!html.contains("edition__link--submit"))
     }
 
     @Test func tableEmptyHostShowsDash() {
-        let editions = [edition(month: "2026-04")]
-        let html = renderTableHTML(editions)
+        let html = renderTableHTML([edition(month: "2026-04")]).map { render($0) }.joined()
         #expect(html.contains("&mdash;"))
     }
 
     @Test func tableShowsTopicWithAriaHidden() {
-        let editions = [
+        let items = renderTableHTML([
             edition(month: "2026-04", name: "Alice", topic: "Concurrency", status: .open),
-        ]
-        let html = renderTableHTML(editions)
-        #expect(html.contains("<span class=\"edition__topic\" aria-hidden=\"true\">Concurrency</span>"))
+        ])
+        let html = render(items[0])
+        #expect(html.contains(#"aria-hidden="true""#))
+        #expect(html.contains("Concurrency"))
+        #expect(html.contains("edition__topic"))
     }
 
     @Test func tableUsesFormattedMonths() {
-        let editions = [edition(month: "2026-12", name: "Alice")]
-        let html = renderTableHTML(editions)
+        let html = renderTableHTML([edition(month: "2026-12", name: "Alice")]).map { render($0) }.joined()
         #expect(html.contains("December 2026"))
     }
 }

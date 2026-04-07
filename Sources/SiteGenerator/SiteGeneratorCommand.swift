@@ -1,5 +1,6 @@
 import ArgumentParser
 import Foundation
+import Html
 import SiteGeneratorCore
 import Yams
 
@@ -38,8 +39,8 @@ struct GenerateCommand: ParsableCommand {
         let template = try String(contentsOfFile: "Resources/templates/index.html.tpl", encoding: .utf8)
 
         let featured = findFeatured(data.editions)
-        let featuredHTML = featured.map { renderFeaturedHTML($0) } ?? ""
-        let tableHTML = renderTableHTML(data.editions)
+        let featuredHTML = featured.map { render(renderFeaturedHTML($0)) } ?? ""
+        let tableHTML = renderTableHTML(data.editions).map { render($0) }.joined()
 
         let html = template
             .replacingOccurrences(of: "{{FEATURED}}", with: featuredHTML)
