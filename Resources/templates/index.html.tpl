@@ -11,26 +11,28 @@
 <div class="page">
 
     <header>
-        <div class="orange-dot" aria-hidden="true"></div>
+        <div class="header__dot" aria-hidden="true"></div>
         <h1>Swift Blog Carnival</h1>
         <p>A monthly community blogging event. One host, one topic, everyone writes.</p>
-        <p class="how-it-works">Each month a host picks a topic. You write a post on your own blog, then share the link. The host collects everything into a roundup.</p>
+        <p class="header__detail">Each month a host picks a topic. You write a post on your own blog, then share the link. The host collects everything into a roundup.</p>
     </header>
 
-    <hr>
+    <main>
+        <h2 class="section-label">Current Edition</h2>
+        {{FEATURED}}
 
-    <h2 class="section-heading">Current Edition</h2>
-    {{FEATURED}}
-
-    <h2 class="section-heading editions-heading">Editions</h2>
-    {{TABLE}}
+        <h2 class="section-label section-label--spaced">Editions</h2>
+        <ol class="edition-list" reversed>
+            {{TABLE}}
+        </ol>
+    </main>
 
     <section class="volunteer">
         <div>
             <h2>Want to host?</h2>
             <p>Pick a month, choose a topic, rally the community.</p>
         </div>
-        <a href="https://github.com/SwiftCarnival/swiftcarnival.github.io/issues/new?template=volunteer-to-host.yml" class="btn-outline">Volunteer</a>
+        <a href="https://github.com/SwiftCarnival/swiftcarnival.github.io/issues/new?template=volunteer-to-host.yml" class="cta cta--outline">Volunteer</a>
     </section>
 
     <footer>

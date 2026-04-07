@@ -12,7 +12,7 @@ func edition(month: String = "2026-04", name: String = "", link: String = "", to
         #expect(html.contains("May 2026"))
         #expect(html.contains("<a href=\"https://alice.dev\">Alice</a>"))
         #expect(html.contains("Concurrency"))
-        #expect(html.contains("badge-open"))
+        #expect(html.contains("badge--open"))
     }
 
     @Test func featuredWithEmptyHost() {
@@ -25,7 +25,7 @@ func edition(month: String = "2026-04", name: String = "", link: String = "", to
     @Test func featuredShowsAnnouncementWhenOpen() {
         let e = edition(month: "2026-04", name: "Alice", topic: "Testing", status: .open, announcement: "https://example.com/call")
         let html = renderFeaturedHTML(e)
-        #expect(html.contains("announcement-link"))
+        #expect(html.contains("cta--primary"))
         #expect(html.contains("https://example.com/call"))
         #expect(html.contains("See the call for posts"))
     }
@@ -33,13 +33,13 @@ func edition(month: String = "2026-04", name: String = "", link: String = "", to
     @Test func featuredHidesAnnouncementWhenUpcoming() {
         let e = edition(month: "2026-04", name: "Alice", status: .upcoming, announcement: "https://example.com/call")
         let html = renderFeaturedHTML(e)
-        #expect(!html.contains("announcement-link"))
+        #expect(!html.contains("cta--primary"))
     }
 
     @Test func featuredHidesAnnouncementWhenEmpty() {
         let e = edition(month: "2026-04", name: "Alice", status: .open)
         let html = renderFeaturedHTML(e)
-        #expect(!html.contains("announcement-link"))
+        #expect(!html.contains("cta--primary"))
     }
 }
 
@@ -54,8 +54,8 @@ func edition(month: String = "2026-04", name: String = "", link: String = "", to
         #expect(html.contains("April 2026"))
         #expect(html.contains("Alice"))
         #expect(html.contains("<a href=\"https://bob.dev\">Bob</a>"))
-        #expect(html.contains("badge-upcoming"))
-        #expect(html.contains("badge-published"))
+        #expect(html.contains("badge--upcoming"))
+        #expect(html.contains("badge--published"))
     }
 
     @Test func tableShowsRoundupLink() {
@@ -63,7 +63,7 @@ func edition(month: String = "2026-04", name: String = "", link: String = "", to
             edition(month: "2026-04", name: "Bob", topic: "SwiftUI", status: .published, roundup: "https://example.com/roundup"),
         ]
         let html = renderTableHTML(editions)
-        #expect(html.contains("roundup-link"))
+        #expect(html.contains("edition__link--roundup"))
         #expect(html.contains("Read roundup"))
     }
 
@@ -72,7 +72,7 @@ func edition(month: String = "2026-04", name: String = "", link: String = "", to
             edition(month: "2026-04", name: "Alice", topic: "Testing", status: .open, announcement: "https://example.com/call"),
         ]
         let html = renderTableHTML(editions)
-        #expect(html.contains("submit-link"))
+        #expect(html.contains("edition__link--submit"))
         #expect(html.contains("Submit post"))
         #expect(html.contains("https://example.com/call"))
     }
@@ -82,7 +82,7 @@ func edition(month: String = "2026-04", name: String = "", link: String = "", to
             edition(month: "2026-04", name: "Alice", topic: "Testing", status: .open),
         ]
         let html = renderTableHTML(editions)
-        #expect(!html.contains("submit-link"))
+        #expect(!html.contains("edition__link--submit"))
     }
 
     @Test func tableEmptyHostShowsDash() {
@@ -96,7 +96,7 @@ func edition(month: String = "2026-04", name: String = "", link: String = "", to
             edition(month: "2026-04", name: "Alice", topic: "Concurrency", status: .open),
         ]
         let html = renderTableHTML(editions)
-        #expect(html.contains("<span class=\"ed-topic\" aria-hidden=\"true\">Concurrency</span>"))
+        #expect(html.contains("<span class=\"edition__topic\" aria-hidden=\"true\">Concurrency</span>"))
     }
 
     @Test func tableUsesFormattedMonths() {

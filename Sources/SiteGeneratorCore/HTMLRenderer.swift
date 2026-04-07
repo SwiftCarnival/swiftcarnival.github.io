@@ -14,29 +14,29 @@ public func renderFeaturedHTML(_ edition: Edition) -> String {
 
     let badgeClass: String
     switch edition.status {
-    case .upcoming: badgeClass = "badge-upcoming"
-    case .open: badgeClass = "badge-open"
-    case .published: badgeClass = "badge-published"
+    case .upcoming: badgeClass = "badge--upcoming"
+    case .open: badgeClass = "badge--open"
+    case .published: badgeClass = "badge--published"
     }
 
     var html = """
-    <div class="featured">
-        <span class="featured-month">\(monthDisplay)</span>
-        <span class="featured-detail">\(hostValue)</span>
-        <span class="featured-detail">\(topicDisplay)</span>
+    <article class="featured">
+        <span class="featured__month">\(monthDisplay)</span>
+        <span class="featured__host">\(hostValue)</span>
+        <span class="featured__topic">\(topicDisplay)</span>
         <span class="badge \(badgeClass)">\(edition.status.rawValue)</span>
     """
 
     if edition.status == .open && !edition.announcement.isEmpty {
         html += """
 
-            <div class="featured-announcement">
-                <a href="\(edition.announcement)" class="announcement-link" aria-label="See the call for posts for \(monthDisplay): \(topicDisplay)">See the call for posts &rarr;</a>
+            <div class="featured__cta">
+                <a href="\(edition.announcement)" class="cta cta--primary" aria-label="See the call for posts for \(monthDisplay): \(topicDisplay)">See the call for posts &rarr;</a>
             </div>
         """
     }
 
-    html += "\n</div>"
+    html += "\n</article>"
     return html
 }
 
@@ -56,33 +56,33 @@ public func renderTableHTML(_ editions: [Edition]) -> String {
 
         let topicHTML: String
         if !topicDisplay.isEmpty {
-            topicHTML = "<span class=\"ed-topic\" aria-hidden=\"true\">\(topicDisplay)</span>"
+            topicHTML = "<span class=\"edition__topic\" aria-hidden=\"true\">\(topicDisplay)</span>"
         } else {
             topicHTML = ""
         }
 
         let badgeClass: String
         switch edition.status {
-        case .upcoming: badgeClass = "badge-upcoming"
-        case .open: badgeClass = "badge-open"
-        case .published: badgeClass = "badge-published"
+        case .upcoming: badgeClass = "badge--upcoming"
+        case .open: badgeClass = "badge--open"
+        case .published: badgeClass = "badge--published"
         }
 
         let actionHTML: String
         if edition.status == .open && !edition.announcement.isEmpty {
-            actionHTML = "<a href=\"\(edition.announcement)\" class=\"submit-link\" aria-label=\"Submit a post for \(monthDisplay): \(topicDisplay)\">Submit post &rarr;</a>"
+            actionHTML = "<a href=\"\(edition.announcement)\" class=\"edition__link edition__link--submit\" aria-label=\"Submit a post for \(monthDisplay): \(topicDisplay)\">Submit post &rarr;</a>"
         } else if edition.status == .published && !edition.roundup.isEmpty {
-            actionHTML = "<a href=\"\(edition.roundup)\" class=\"roundup-link\" aria-label=\"Read the roundup for \(monthDisplay): \(topicDisplay)\">Read roundup &rarr;</a>"
+            actionHTML = "<a href=\"\(edition.roundup)\" class=\"edition__link edition__link--roundup\" aria-label=\"Read the roundup for \(monthDisplay): \(topicDisplay)\">Read roundup &rarr;</a>"
         } else {
             actionHTML = ""
         }
 
         items += """
-            <div class="ed-item">
-                <span class="ed-month">\(monthDisplay)</span>
-                <span class="ed-info">\(hostHTML)\(topicHTML)</span>
-                <span class="ed-end">\(actionHTML)<span class="badge \(badgeClass)">\(edition.status.rawValue)</span></span>
-            </div>\n
+            <li class="edition">
+                <span class="edition__month">\(monthDisplay)</span>
+                <span class="edition__host">\(hostHTML)\(topicHTML)</span>
+                <span class="edition__actions">\(actionHTML)<span class="badge \(badgeClass)">\(edition.status.rawValue)</span></span>
+            </li>\n
         """
     }
 

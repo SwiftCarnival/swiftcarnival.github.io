@@ -11,7 +11,6 @@
     --button-a: #ff7f00;
     --button-b: #f05238;
     --link: #384FEA;
-    --radius-card: 22px;
     --radius-button: 43px;
     --radius-badge: 22px;
 }
@@ -31,7 +30,7 @@ body {
 
 header { padding: 6rem 0 0; }
 
-.orange-dot {
+.header__dot {
     width: 10px;
     height: 10px;
     border-radius: 50%;
@@ -52,20 +51,15 @@ header p {
     font-size: 1rem;
 }
 
-.how-it-works {
+.header__detail {
     margin-top: 0.75rem;
     font-size: 0.88rem;
     color: var(--text-tertiary);
 }
 
-hr {
-    border: none;
-    height: 1px;
-    background: var(--border);
-    margin: 3rem 0;
-}
+main { border-top: 1px solid var(--border); margin-top: 3rem; padding-top: 3rem; }
 
-.section-heading {
+.section-label {
     font-size: 0.6rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -74,7 +68,9 @@ hr {
     margin-bottom: 1rem;
 }
 
-.editions-heading { margin-top: 3rem; }
+.section-label--spaced { margin-top: 3rem; }
+
+/* Featured edition */
 
 .featured {
     display: flex;
@@ -83,19 +79,41 @@ hr {
     flex-wrap: wrap;
 }
 
-.featured-month {
+.featured__month {
     font-size: 1.5rem;
     font-weight: 700;
     letter-spacing: -0.02em;
 }
 
-.featured-detail {
+.featured__host {
     font-size: 0.9rem;
     color: var(--text-secondary);
 }
 
-.featured-detail a { color: var(--link); text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 3px; }
-.featured-detail a:hover { text-decoration-color: var(--link); }
+.featured__topic {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.featured__host a,
+.edition__host a {
+    color: var(--link);
+    text-decoration: underline;
+    text-decoration-color: var(--border);
+    text-underline-offset: 3px;
+}
+
+.featured__host a:hover,
+.edition__host a:hover {
+    text-decoration-color: var(--link);
+}
+
+.featured__cta {
+    margin-top: 0.75rem;
+    width: 100%;
+}
+
+/* Badge */
 
 .badge {
     display: inline-block;
@@ -108,33 +126,48 @@ hr {
     vertical-align: middle;
 }
 
-.badge-upcoming { background: linear-gradient(135deg, var(--orange-start), var(--orange-end)); color: #4a2800; }
-.badge-open { background: #d1f5d9; color: #15572a; }
-.badge-published { background: #eee; color: #666; }
+.badge--upcoming { background: linear-gradient(135deg, var(--orange-start), var(--orange-end)); color: #4a2800; }
+.badge--open { background: #d1f5d9; color: #15572a; }
+.badge--published { background: #eee; color: #666; }
 
-.featured-announcement {
-    margin-top: 0.75rem;
-    width: 100%;
-}
+/* CTA buttons */
 
-.announcement-link {
+.cta {
     display: inline-block;
     font-size: 0.82rem;
     font-weight: 600;
-    color: #fff;
-    background: linear-gradient(to bottom right, var(--button-a), var(--button-b));
     padding: 15px 48px;
     border-radius: var(--radius-button);
     text-decoration: none;
+    white-space: nowrap;
+}
+
+.cta--primary {
+    color: #fff;
+    background: linear-gradient(to bottom right, var(--button-a), var(--button-b));
     transition: box-shadow 0.2s, transform 0.15s;
 }
 
-.announcement-link:hover {
+.cta--primary:hover {
     box-shadow: 0 4px 20px rgba(240, 82, 56, 0.25);
     transform: translateY(-1px);
 }
 
-.ed-item {
+.cta--outline {
+    color: var(--text);
+    border: 1.5px solid var(--border);
+    transition: border-color 0.15s, color 0.15s;
+}
+
+.cta--outline:hover { border-color: var(--text); }
+
+/* Edition list */
+
+.edition-list {
+    list-style: none;
+}
+
+.edition {
     display: flex;
     align-items: baseline;
     gap: 1rem;
@@ -143,9 +176,9 @@ hr {
     font-size: 0.9rem;
 }
 
-.ed-item:first-child { border-top: 1px solid var(--border); }
+.edition:first-child { border-top: 1px solid var(--border); }
 
-.ed-month {
+.edition__month {
     font-variant-numeric: tabular-nums;
     font-weight: 600;
     font-size: 0.82rem;
@@ -153,18 +186,15 @@ hr {
     color: var(--text);
 }
 
-.ed-info {
+.edition__host {
     flex: 1;
     color: var(--text-secondary);
 }
 
-.ed-info a { color: var(--link); text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 3px; }
-.ed-info a:hover { text-decoration-color: var(--link); }
+.edition__topic { color: var(--text-tertiary); font-size: 0.85rem; }
+.edition__topic::before { content: " — "; }
 
-.ed-topic { color: var(--text-tertiary); font-size: 0.85rem; }
-.ed-topic::before { content: " — "; }
-
-.ed-end {
+.edition__actions {
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -173,18 +203,19 @@ hr {
     justify-content: flex-end;
 }
 
-.roundup-link,
-.submit-link {
+.edition__link {
     font-size: 0.75rem;
     font-weight: 500;
     text-decoration: none;
 }
 
-.roundup-link { color: var(--text-tertiary); }
-.roundup-link:hover { color: var(--text); text-decoration: underline; }
+.edition__link--roundup { color: var(--text-tertiary); }
+.edition__link--roundup:hover { color: var(--text); text-decoration: underline; }
 
-.submit-link { color: var(--button-b); }
-.submit-link:hover { text-decoration: underline; }
+.edition__link--submit { color: var(--button-b); }
+.edition__link--submit:hover { text-decoration: underline; }
+
+/* Volunteer */
 
 .volunteer {
     margin-top: 3rem;
@@ -207,20 +238,7 @@ hr {
     margin-top: 0.15rem;
 }
 
-.btn-outline {
-    display: inline-block;
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--text);
-    padding: 15px 48px;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-button);
-    text-decoration: none;
-    white-space: nowrap;
-    transition: border-color 0.15s, color 0.15s;
-}
-
-.btn-outline:hover { border-color: var(--text); }
+/* Footer */
 
 footer {
     margin-top: 3rem;
@@ -239,8 +257,8 @@ footer a:hover { color: var(--text); }
     .page { padding: 0 1.25rem; }
     header { padding: 3.5rem 0 0; }
     .featured { flex-direction: column; gap: 0.5rem; }
-    .featured-announcement { margin-top: 0.5rem; }
+    .featured__cta { margin-top: 0.5rem; }
     .volunteer { flex-direction: column; align-items: flex-start; }
-    .ed-topic { font-size: 0.78rem; }
-    .ed-end { gap: 0.5rem; }
+    .edition__topic { font-size: 0.78rem; }
+    .edition__actions { gap: 0.5rem; }
 }
