@@ -46,7 +46,7 @@ public func renderFeaturedHTML(_ edition: Edition) -> Node {
 }
 
 public func renderTableHTML(_ editions: [Edition]) -> Node {
-    let items: [ChildOf<Tag.Ol>] = editions.map { edition in
+    .ol(attributes: [.class("edition-list"), .reversed(true)], editions.map { edition in
         let hostDisplay = edition.host.name.isEmpty ? "&mdash;" : edition.host.name
         let topicDisplay = edition.topic.isEmpty ? "" : edition.topic
         let monthDisplay = formatMonth(edition.month)
@@ -85,9 +85,7 @@ public func renderTableHTML(_ editions: [Edition]) -> Node {
             .span(attributes: [.class("edition__actions")], actionNode,
                 .span(attributes: [.class(badgeClass(edition.status))], .text(edition.status.rawValue)))
         )
-    }
-
-    return .ol(attributes: [.class("edition-list"), .reversed(true)], items)
+    })
 }
 
 public func renderPage(featured: Node?, editionItems: Node) -> Node {
