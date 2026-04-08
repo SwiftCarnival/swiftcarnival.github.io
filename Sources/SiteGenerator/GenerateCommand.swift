@@ -21,8 +21,11 @@ struct GenerateCommand: ParsableCommand {
         try FileManager.default.createDirectory(atPath: outputDir, withIntermediateDirectories: true)
         try html.write(toFile: "\(outputDir)/index.html", atomically: true, encoding: .utf8)
 
-        if FileManager.default.fileExists(atPath: "Resources/static/style.css") {
-            try FileManager.default.copyItem(atPath: "Resources/static/style.css", toPath: "\(outputDir)/style.css")
+        let cssSource = "Resources/static/style.css"
+        let cssDest = "\(outputDir)/style.css"
+        if FileManager.default.fileExists(atPath: cssSource) {
+            try? FileManager.default.removeItem(atPath: cssDest)
+            try FileManager.default.copyItem(atPath: cssSource, toPath: cssDest)
         }
 
         updateReadme(data.editions)
