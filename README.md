@@ -9,7 +9,7 @@ A monthly community blogging event for Swift developers. Each month, a volunteer
 <!-- EDITIONS:START -->
 | Month | Host | Topic | Status |
 |-------|------|-------|--------|
-| 2026-04 | [Christian Tietze](https://christiantietze.de) | Tiny Languages | open |
+| 2026-04 | [Christian Tietze](https://christiantietze.de) | Tiny Languages | open ([announcement](https://christiantietze.de/posts/2026/04/swift-blog-carnival-tiny-languages/)) |
 <!-- EDITIONS:END -->
 
 ## How It Works
