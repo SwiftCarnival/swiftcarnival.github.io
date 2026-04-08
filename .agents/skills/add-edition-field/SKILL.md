@@ -1,3 +1,8 @@
+---
+name: add-edition-field
+description: Adds a new field to the Edition model and propagates it through renderers, test helpers, fixtures, and validation. Use when extending the Edition data schema.
+---
+
 # Add Edition Field
 
 Add a new field to the Edition model and propagate it through all renderers.
@@ -24,7 +29,7 @@ Add a new field to the Edition model and propagate it through all renderers.
 
 ## Verification
 
-```
+```bash
 swift test
-rm -rf output && swift run SiteGenerator generate
+swift run SiteGenerator generate
 ```

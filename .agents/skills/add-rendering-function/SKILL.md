@@ -1,3 +1,8 @@
+---
+name: add-rendering-function
+description: Scaffolds a new rendering function in SiteGeneratorCore/Rendering following project file conventions and swift-html patterns. Use when adding a new renderer.
+---
+
 # Add Rendering Function
 
 Scaffold a new rendering function following project conventions.
@@ -18,7 +23,7 @@ Scaffold a new rendering function following project conventions.
 
 ## Verification
 
-```
+```bash
 swift test
-rm -rf output && swift run SiteGenerator generate
+swift run SiteGenerator generate
 ```

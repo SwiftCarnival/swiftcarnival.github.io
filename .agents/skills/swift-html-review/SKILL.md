@@ -1,3 +1,8 @@
+---
+name: swift-html-review
+description: Reviews Swift rendering code for idiomatic and safe pointfreeco/swift-html usage, including escaping, Node construction, and BEM class conventions. Use when auditing renderers.
+---
+
 # swift-html Code Review
 
 Review Swift rendering code for idiomatic swift-html usage. Check files in `Sources/SiteGeneratorCore/Rendering/`.
