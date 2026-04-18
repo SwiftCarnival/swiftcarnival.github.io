@@ -27,6 +27,8 @@ public func renderPage(featured: Node?, editionItems: Node) -> Node {
                         editionItems
                     ),
 
+                    renderExampleTopics(),
+
                     .section(attributes: [.class("volunteer")],
                         .div(
                             .h2(.text("Want to host?")),

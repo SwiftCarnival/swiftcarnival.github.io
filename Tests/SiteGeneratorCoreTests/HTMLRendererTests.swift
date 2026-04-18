@@ -168,6 +168,15 @@ func edition(month: String = "2026-04", name: String = "", link: String = "", to
     }
 }
 
+@Suite struct ExampleTopicsTests {
+    @Test func containsSectionAndHeading() {
+        let html = render(renderExampleTopics())
+        #expect(html.contains(#"class="topics""#))
+        #expect(html.contains("Example Topics"))
+        #expect(html.contains("topics__intro"))
+    }
+}
+
 @Suite struct PageHTMLTests {
     @Test func pageContainsDoctype() {
         let html = render(renderPage(featured: nil, editionItems: []))
@@ -181,5 +190,7 @@ func edition(month: String = "2026-04", name: String = "", link: String = "", to
         #expect(html.contains("volunteer"))
         #expect(html.contains("cta--outline"))
         #expect(html.contains(#"lang="en""#))
+        #expect(html.contains("topics"))
+        #expect(html.contains("Example Topics"))
     }
 }

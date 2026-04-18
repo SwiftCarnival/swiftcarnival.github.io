@@ -215,6 +215,49 @@ main { border-top: 1px solid var(--border); margin-top: 3rem; padding-top: 3rem;
 .edition__link--submit { color: var(--button-b); }
 .edition__link--submit:hover { text-decoration: underline; }
 
+/* Example topics */
+
+.topics {
+    margin-top: 3rem;
+    padding: 2rem 0;
+    border-top: 1px solid var(--border);
+}
+
+.topics .section-label { margin-bottom: 0.5rem; }
+
+.topics__intro {
+    color: var(--text-tertiary);
+    font-size: 0.88rem;
+    margin-bottom: 1.5rem;
+}
+
+.topics__list {
+    list-style: none;
+    display: grid;
+    gap: 1rem;
+}
+
+.topics__item {
+    padding: 1rem 1.25rem;
+    background: var(--surface);
+    border-radius: 8px;
+    border: 1px solid var(--border-light);
+}
+
+.topics__title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.topics__desc {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
 /* Volunteer */
 
 .volunteer {
