@@ -2,7 +2,7 @@ name: Manage Editions
 
 on:
   issues:
-    types: [labeled]
+    types: [labeled, edited]
 
 permissions:
   contents: write
@@ -10,16 +10,15 @@ permissions:
   actions: write
 
 jobs:
-  update:
+  sync:
     runs-on: ubuntu-latest
     if: >
-      github.event.label.name == 'approved' ||
-      github.event.label.name == 'status-open' ||
-      github.event.label.name == 'status-published'
+      (github.event.action == 'labeled' && github.event.label.name == 'approved') ||
+      (github.event.action == 'edited' && contains(github.event.issue.labels.*.name, 'approved'))
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check maintainer
+      - name: Check actor is a maintainer
         env:
           ACTOR: ${{ github.actor }}
         run: |
@@ -34,24 +33,12 @@ jobs:
 
       - run: pip install pyyaml
 
-      - name: Determine action
-        id: action
-        env:
-          LABEL: ${{ github.event.label.name }}
-        run: |
-          case "$LABEL" in
-            approved)         echo "action=approve" >> "$GITHUB_OUTPUT" ;;
-            status-open)      echo "action=status-open" >> "$GITHUB_OUTPUT" ;;
-            status-published) echo "action=status-published" >> "$GITHUB_OUTPUT" ;;
-          esac
-
-      - name: Update editions.yml
-        id: update
+      - name: Sync editions.yml from issue body
+        id: sync
         env:
           ISSUE_BODY: ${{ github.event.issue.body }}
-          ACTION: ${{ steps.action.outputs.action }}
         run: |
-          RESULT=$(python scripts/update_editions.py "$ACTION" --body "$ISSUE_BODY" 2>&1) || {
+          RESULT=$(python scripts/update_editions.py --body "$ISSUE_BODY" 2>&1) || {
             echo "result<<EOF" >> "$GITHUB_OUTPUT"
             echo "$RESULT" >> "$GITHUB_OUTPUT"
             echo "EOF" >> "$GITHUB_OUTPUT"
@@ -62,39 +49,48 @@ jobs:
           echo "$RESULT" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
 
-      - name: Comment on error and remove label
-        if: steps.update.outputs.failed == 'true'
+      - name: Comment on error
+        if: steps.sync.outputs.failed == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE: ${{ github.event.issue.number }}
-          LABEL: ${{ github.event.label.name }}
-          RESULT: ${{ steps.update.outputs.result }}
-        run: |
-          gh issue comment "$ISSUE" -R "$GITHUB_REPOSITORY" --body "$RESULT"
-          gh issue edit "$ISSUE" -R "$GITHUB_REPOSITORY" --remove-label "$LABEL"
+          RESULT: ${{ steps.sync.outputs.result }}
+        run: gh issue comment "$ISSUE" -R "$GITHUB_REPOSITORY" --body "$RESULT"
 
-      - name: Commit and push
-        if: steps.update.outputs.failed != 'true'
+      - name: Commit if changed
+        id: commit
+        if: steps.sync.outputs.failed != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/editions.yml
-          git commit -m "Update editions.yml from issue #${{ github.event.issue.number }}"
-          git push
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "Sync editions.yml from issue #${{ github.event.issue.number }}"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Trigger site deploy
-        if: steps.update.outputs.failed != 'true'
+        if: steps.commit.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh workflow run deploy.yml -R "$GITHUB_REPOSITORY"
 
-      - name: Comment, remove needs-review, and close issue
-        if: steps.update.outputs.failed != 'true'
+      - name: Comment on success
+        if: steps.commit.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE: ${{ github.event.issue.number }}
-          RESULT: ${{ steps.update.outputs.result }}
+          RESULT: ${{ steps.sync.outputs.result }}
         run: |
           gh issue comment "$ISSUE" -R "$GITHUB_REPOSITORY" --body "$RESULT"
           gh issue edit "$ISSUE" -R "$GITHUB_REPOSITORY" --remove-label "needs-review" || true
-          gh issue close "$ISSUE" -R "$GITHUB_REPOSITORY"
+
+      - name: Close on publish
+        if: steps.commit.outputs.changed == 'true' && contains(steps.sync.outputs.result, 'Status: published')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ github.event.issue.number }}
+        run: gh issue close "$ISSUE" -R "$GITHUB_REPOSITORY"

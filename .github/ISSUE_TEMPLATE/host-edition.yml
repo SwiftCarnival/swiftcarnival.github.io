@@ -1,0 +1,64 @@
+name: Host an Edition
+description: Claim a month, then update this same issue as your edition progresses
+title: "Edition: [MONTH]"
+labels: ["edition", "needs-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Open one issue per edition and edit it as you go.
+        A maintainer approves you once; after that, edits to this issue update the site automatically.
+  - type: input
+    id: month
+    attributes:
+      label: Month
+      description: Which month do you want to host? (YYYY-MM format)
+      placeholder: "2026-06"
+    validations:
+      required: true
+  - type: input
+    id: name
+    attributes:
+      label: Your name
+      description: How should we credit you?
+      placeholder: "Jane Swift"
+    validations:
+      required: true
+  - type: input
+    id: link
+    attributes:
+      label: Your blog or profile URL
+      placeholder: "https://example.com"
+    validations:
+      required: false
+  - type: input
+    id: topic
+    attributes:
+      label: Topic
+      description: What topic should the community write about?
+      placeholder: "Concurrency in Swift"
+    validations:
+      required: false
+  - type: input
+    id: announcement
+    attributes:
+      label: Announcement URL
+      description: Add this when you publish your call for posts. The site will mark the edition as "open" automatically.
+      placeholder: "https://example.com/swift-carnival-2026-06"
+    validations:
+      required: false
+  - type: input
+    id: roundup
+    attributes:
+      label: Roundup URL
+      description: Add this when you publish your roundup post. The site will mark the edition as "published" automatically and close this issue.
+      placeholder: "https://example.com/swift-carnival-2026-06-roundup"
+    validations:
+      required: false
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else?
+      description: Co-host interest, topic alternatives, timeline preferences, etc.
+    validations:
+      required: false

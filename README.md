@@ -14,11 +14,11 @@ A monthly community blogging event for Swift developers. Each month, a volunteer
 
 ## How It Works
 
-1. **Volunteer:** [Open an issue](https://github.com/SwiftCarnival/swiftcarnival.github.io/issues/new?template=volunteer-to-host.yml) to claim a month and propose a topic. A maintainer will approve you.
-2. **Announce:** Write a blog post or share on social media that your edition is open for submissions.
-3. **Collect:** The community writes and publishes posts on your topic during the month.
-4. **Publish:** At month's end, publish a roundup post linking to all submissions.
-5. **Close the loop:** [Open an update issue](https://github.com/SwiftCarnival/swiftcarnival.github.io/issues/new?template=update-edition.yml) with your roundup URL. A maintainer marks it as published and the site updates automatically.
+One issue per edition. Open it once, edit it as you go.
+
+1. **Claim a month:** [Open an issue](https://github.com/SwiftCarnival/swiftcarnival.github.io/issues/new?template=host-edition.yml) with your month, name, and topic. A maintainer approves you once.
+2. **Announce:** Write your call for posts on your blog. Edit the issue and paste the announcement URL — the site marks your edition as **open** automatically.
+3. **Publish the roundup:** At month's end, publish a roundup post on your blog. Edit the issue and paste the roundup URL — the site marks the edition as **published** and the issue closes.
 
 ## Example Topics
 
