@@ -89,7 +89,7 @@ jobs:
           gh issue edit "$ISSUE" -R "$GITHUB_REPOSITORY" --remove-label "needs-review" || true
 
       - name: Close on publish
-        if: steps.commit.outputs.changed == 'true' && contains(steps.sync.outputs.result, 'Status: published')
+        if: "steps.commit.outputs.changed == 'true' && contains(steps.sync.outputs.result, 'Status: published')"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE: ${{ github.event.issue.number }}
