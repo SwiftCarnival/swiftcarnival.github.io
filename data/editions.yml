@@ -1,4 +1,12 @@
 editions:
+- month: 2026-05
+  host:
+    name: Keren R. Bell
+    link: https://kirby.pika.page/
+  topic: When did SwiftUI leave you hanging?
+  status: upcoming
+  announcement: ''
+  roundup: ''
 - month: 2026-04
   host:
     name: Christian Tietze
