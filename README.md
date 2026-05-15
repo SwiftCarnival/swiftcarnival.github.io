@@ -9,7 +9,7 @@ A monthly community blogging event for Swift developers. Each month, a volunteer
 <!-- EDITIONS:START -->
 | Month | Host | Topic | Status |
 |-------|------|-------|--------|
-| 2026-05 | [Keren R. Bell](https://kirby.pika.page/) | When did SwiftUI leave you hanging? | upcoming |
+| 2026-05 | [Keren R. Bell](https://kirby.pika.page/) | When did SwiftUI leave you hanging? | open ([announcement](https://kirby.pika.page/posts/where-did-swiftui-leave-you-hanging-join-the-swift-blog-carnival-for-may)) |
 | 2026-04 | [Christian Tietze](https://christiantietze.de) | Tiny Languages | published ([roundup](https://christiantietze.de/posts/2026/05/swift-blog-carnival-tiny-languages-roundup/)) |
 <!-- EDITIONS:END -->
 
