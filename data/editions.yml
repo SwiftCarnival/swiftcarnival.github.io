@@ -1,10 +1,14 @@
+# Status is derived from the URL fields. Do NOT add a `status:` key.
+#   roundup URL set       -> published
+#   else announcement URL -> open
+#   else                  -> upcoming
+# To advance an edition, set the appropriate URL.
 editions:
 - month: 2026-05
   host:
     name: Keren R. Bell
     link: https://kirby.pika.page/
   topic: When did SwiftUI leave you hanging?
-  status: open
   announcement: https://kirby.pika.page/posts/where-did-swiftui-leave-you-hanging-join-the-swift-blog-carnival-for-may
   roundup: ''
 - month: 2026-04
@@ -12,6 +16,5 @@ editions:
     name: Christian Tietze
     link: https://christiantietze.de
   topic: Tiny Languages
-  status: published
   announcement: https://christiantietze.de/posts/2026/04/swift-blog-carnival-tiny-languages/
   roundup: https://christiantietze.de/posts/2026/05/swift-blog-carnival-tiny-languages-roundup/

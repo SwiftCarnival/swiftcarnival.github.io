@@ -41,18 +41,22 @@ class SyncTests(unittest.TestCase):
     def read(self) -> dict:
         return yaml.safe_load(Path("data/editions.yml").read_text())
 
+    def status_of(self, e: dict) -> str:
+        return ue.derive_status(e.get("announcement", ""), e.get("roundup", ""))
+
     def test_new_edition_with_no_urls_is_upcoming(self):
         ue.sync(ue.parse_issue_body(issue_body("2026-06")))
         e = self.read()["editions"][0]
         self.assertEqual(e["month"], "2026-06")
-        self.assertEqual(e["status"], "upcoming")
+        self.assertNotIn("status", e)
+        self.assertEqual(self.status_of(e), "upcoming")
         self.assertEqual(e["announcement"], "")
         self.assertEqual(e["roundup"], "")
 
     def test_announcement_url_makes_open(self):
         ue.sync(ue.parse_issue_body(issue_body("2026-06", announcement="https://x/y")))
         e = self.read()["editions"][0]
-        self.assertEqual(e["status"], "open")
+        self.assertEqual(self.status_of(e), "open")
         self.assertEqual(e["announcement"], "https://x/y")
 
     def test_roundup_url_makes_published(self):
@@ -60,7 +64,7 @@ class SyncTests(unittest.TestCase):
                                                  announcement="https://x/y",
                                                  roundup="https://x/r")))
         e = self.read()["editions"][0]
-        self.assertEqual(e["status"], "published")
+        self.assertEqual(self.status_of(e), "published")
         self.assertEqual(e["roundup"], "https://x/r")
 
     def test_repeated_sync_is_idempotent(self):
@@ -72,21 +76,29 @@ class SyncTests(unittest.TestCase):
 
     def test_status_progression_via_edits(self):
         ue.sync(ue.parse_issue_body(issue_body("2026-06")))
-        self.assertEqual(self.read()["editions"][0]["status"], "upcoming")
+        self.assertEqual(self.status_of(self.read()["editions"][0]), "upcoming")
         ue.sync(ue.parse_issue_body(issue_body("2026-06", announcement="https://x/y")))
-        self.assertEqual(self.read()["editions"][0]["status"], "open")
+        self.assertEqual(self.status_of(self.read()["editions"][0]), "open")
         ue.sync(ue.parse_issue_body(issue_body("2026-06",
                                                  announcement="https://x/y",
                                                  roundup="https://x/r")))
-        self.assertEqual(self.read()["editions"][0]["status"], "published")
+        self.assertEqual(self.status_of(self.read()["editions"][0]), "published")
 
     def test_clearing_roundup_demotes_to_open(self):
         ue.sync(ue.parse_issue_body(issue_body("2026-06",
                                                  announcement="https://x/y",
                                                  roundup="https://x/r")))
         ue.sync(ue.parse_issue_body(issue_body("2026-06", announcement="https://x/y")))
-        self.assertEqual(self.read()["editions"][0]["status"], "open")
+        self.assertEqual(self.status_of(self.read()["editions"][0]), "open")
         self.assertEqual(self.read()["editions"][0]["roundup"], "")
+
+    def test_legacy_status_field_is_stripped_on_edit(self):
+        ue.sync(ue.parse_issue_body(issue_body("2026-06")))
+        data = self.read()
+        data["editions"][0]["status"] = "stale"
+        Path("data/editions.yml").write_text(yaml.dump(data, sort_keys=False))
+        ue.sync(ue.parse_issue_body(issue_body("2026-06", announcement="https://x/y")))
+        self.assertNotIn("status", self.read()["editions"][0])
 
     def test_invalid_month_returns_error(self):
         result = ue.sync(ue.parse_issue_body(issue_body("2026-13")))

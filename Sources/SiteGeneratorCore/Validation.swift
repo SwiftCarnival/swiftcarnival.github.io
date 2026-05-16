@@ -2,7 +2,6 @@ public enum ValidationError: Error, CustomStringConvertible, Equatable {
     case invalidMonthFormat(String)
     case duplicateMonth(String)
     case notReverseChrono(String, String)
-    case publishedWithoutRoundup(String)
 
     public var description: String {
         switch self {
@@ -12,8 +11,6 @@ public enum ValidationError: Error, CustomStringConvertible, Equatable {
             return "Duplicate month: '\(m)'"
         case .notReverseChrono(let a, let b):
             return "Not in reverse chronological order: '\(a)' appears before '\(b)'"
-        case .publishedWithoutRoundup(let m):
-            return "Edition \(m) has status 'published' but no roundup URL"
         }
     }
 }
@@ -34,10 +31,6 @@ public func validateEditions(_ editions: [Edition]) throws {
 
         if i > 0 && edition.month >= editions[i - 1].month {
             throw ValidationError.notReverseChrono(editions[i - 1].month, edition.month)
-        }
-
-        if edition.status == .published && edition.roundup.isEmpty {
-            throw ValidationError.publishedWithoutRoundup(edition.month)
         }
     }
 }

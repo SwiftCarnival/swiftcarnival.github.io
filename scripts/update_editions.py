@@ -21,6 +21,14 @@ EDITIONS_PATH = Path("data/editions.yml")
 
 MONTH_RE = re.compile(r"^\d{4}-(0[1-9]|1[0-2])$")
 
+YAML_HEADER = """\
+# Status is derived from the URL fields. Do NOT add a `status:` key.
+#   roundup URL set       -> published
+#   else announcement URL -> open
+#   else                  -> upcoming
+# To advance an edition, set the appropriate URL.
+"""
+
 
 def parse_issue_body(body: str) -> dict[str, str]:
     fields: dict[str, str] = {}
@@ -57,7 +65,8 @@ def load_editions() -> dict:
 
 def save_editions(data: dict) -> None:
     EDITIONS_PATH.write_text(
-        yaml.dump(data, default_flow_style=False, sort_keys=False, allow_unicode=True)
+        YAML_HEADER
+        + yaml.dump(data, default_flow_style=False, sort_keys=False, allow_unicode=True)
     )
 
 
@@ -87,7 +96,6 @@ def sync(fields: dict) -> str:
             "month": month,
             "host": {"name": name, "link": link},
             "topic": topic,
-            "status": status,
             "announcement": announcement,
             "roundup": roundup,
         }
@@ -106,7 +114,7 @@ def sync(fields: dict) -> str:
             entry["topic"] = topic
         entry["announcement"] = announcement
         entry["roundup"] = roundup
-        entry["status"] = status
+        entry.pop("status", None)
 
     data["editions"] = editions
     save_editions(data)
